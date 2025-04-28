@@ -14,4 +14,3 @@ dependencies:
   - scikit-learn
   - dask
   - bottleneck
-prefix: /aos/home/jrieck/miniconda3/envs/sliceop
