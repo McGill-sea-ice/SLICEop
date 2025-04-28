@@ -1,0 +1,17 @@
+name: sliceop
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - cfgrib
+  - pandas
+  - matplotlib
+  - requests
+  - xarray
+  - cdsapi
+  - numpy
+  - netcdf4
+  - scikit-learn
+  - dask
+  - bottleneck
+prefix: /aos/home/jrieck/miniconda3/envs/sliceop
