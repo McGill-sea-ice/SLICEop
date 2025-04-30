@@ -4,11 +4,12 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-out_dir = "/storage/jrieck/SLICEop/test/downloads/"
+local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+out_dir = local_path + "downloads/"
 
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = os.environ["DAY"]
+year = f"{now.year:04d}"
+month = f"{now.month:02d}"
+day = f"{(now.day - 1):02d}"
 
 def download_era5(var, month, year, output_dir, lats, lons):
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".grib"
@@ -127,9 +128,6 @@ def download_seas51(var, month, year, output_dir, lats, lons):
                 os.remove(filename)
     return
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-
 variables = ['2m_temperature', 'snowfall', 'total_cloud_cover']
 months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
@@ -184,7 +182,7 @@ elif month in ["01", "02", "03", "04"]:
         updatey = False
         print("ERA5 " + variables[0] + " not yet available, using SEAS5.1")
 else:
-    with open("/storage/jrieck/SLICEop/test/auto/frozen", "r") as f:
+    with open(local_path + "auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     if frozen == "True":
@@ -193,16 +191,16 @@ else:
         frozen = False
     if frozen:
         frozen = False
-        with open("/storage/jrieck/SLICEop/test/auto/frozen", "w") as f:
+        with open(local_path + "auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
     print("no forecast can be made before July")
 
 # save info on whether data was updated
-with open("/storage/jrieck/SLICEop/test/downloads/updatem", "w") as f:
+with open(local_path + "downloads/updatem", "w") as f:
     f.write(str("True"))
 f.close()
 if updatey:
-    with open("/storage/jrieck/SLICEop/test/downloads/updatey", "w") as f:
+    with open(local_path + "downloads/updatey", "w") as f:
         f.write(str("True"))
     f.close()

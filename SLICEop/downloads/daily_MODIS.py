@@ -3,15 +3,11 @@ import datetime
 import requests
 
 now = datetime.datetime.now()
-out_dir = "/storage/jrieck/SLICEop/test/downloads/MODIS/"
+out_dir = "/aos/home/jrieck/src/SLICEop/SLICEop/downloads/MODIS/"
 
-#year = f"{now.year:04d}"
-#month = f"{now.month:02d}"
-#day = f"{(now.day - 1):02d}"
-
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = f"{int(os.environ["DAY"])-1:02d}"
+year = f"{now.year:04d}"
+month = f"{now.month:02d}"
+day = f"{(now.day - 1):02d}"
 
 print("Downloading MODIS satellite image for " + year + "-" + month + "-" + day)
 

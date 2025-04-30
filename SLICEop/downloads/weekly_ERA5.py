@@ -4,14 +4,14 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 out_dir = local_path + "downloads/"
 
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = int(os.environ["DAY"])
+year = f"{now.year:04d}"
+month = f"{now.month:02d}"
+day = int(now.day)
 
-def download_era5(var, month, year, max_day, output_dir, lats, lons):
+def download_era5(var, month, year, output_dir, lats, lons):
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".partial.grib"
     print("Downloading " + var + " for " + str(year) + month + " from ERA5")
     try:
@@ -32,7 +32,18 @@ def download_era5(var, month, year, max_day, output_dir, lats, lons):
                     '16:00','17:00', '18:00','19:00',
                     '20:00','21:00', '22:00','23:00',
                 ],
-                'day': [f"{np.arange(1, max_day+1)[i]:02d}" for i in range(0, max_day)],
+                'day': [
+                        '01', '02', '03',
+                        '04', '05', '06',
+                        '07', '08', '09',
+                        '10', '11', '12',
+                        '13', '14', '15',
+                        '16', '17', '18',
+                        '19', '20', '21',
+                        '22', '23', '24',
+                        '25', '26', '27',
+                        '28', '29', '30', '31'
+                    ],
                 # API ignores cases where there are less than 31 days
                 'month': [month],
                 'year': [year]
@@ -45,31 +56,21 @@ def download_era5(var, month, year, max_day, output_dir, lats, lons):
             os.remove(filename)
     return
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-#day = now.day
-
 variables = ['2m_temperature', 'snowfall', 'total_cloud_cover']
 months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
 lons = np.array([-77.25, -73.25])
 
-max_day = day - 5
-
 if month == "09":
-    if max_day > 0:
+    if day > 6:
         try:
-            download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[2], months[2], year, out_dir + "ERA5/", lats, lons)
         except:
             print("ERA5 " + variables[2] + " not downloaded")
 elif month == "10":
     if day < 7:
-        if max_day > 0:
-            max_day = 30
-        else:
-            max_day = 30 + max_day
         try:
-            download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[2], months[2], year, out_dir + "ERA5/", lats, lons)
         except:
        	    print("ERA5 " + variables[2] + " not downloaded")
     else:
@@ -79,26 +80,17 @@ elif month == "10":
         except:
             pass
 elif month == "11":
-    if max_day > 0:
+    if day > 6:
         try:
-            download_era5(variables[1], months[1], year, max_day, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[1], months[1], year, out_dir + "ERA5/", lats, lons)
         except:
             print("ERA5 " + variables[1] + " not downloaded")
 elif month == "12":
     if day < 7:
-        if max_day > 0:
-            max_day1 = 30
-            try:
-                download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
-                download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
-            except:
-                print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
-        else:
-            max_day1 = 30 + max_day
         try:
-            download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[1], months[1], year, out_dir + "ERA5/", lats, lons)
         except:
-            print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
+            print("ERA5 " + variables[1] + " not downloaded")
     else:
         try:
             os.remove(local_path + "downloads/ERA5/ERA5_"
@@ -106,18 +98,14 @@ elif month == "12":
         except:
             pass
         try:
-            download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[0], months[0], year, out_dir + "ERA5/", lats, lons)
         except:
             print("ERA5 " + variables[0] + " not downloaded")
 elif month == "01":
     year = str(int(year) - 1)
     if day < 7:
-        if max_day > 0:
-             max_day = 31
-        else:
-            max_day = 31 + max_day
         try:
-            download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+            download_era5(variables[0], months[0], year, out_dir + "ERA5/", lats, lons)
         except:
             print("ERA5 " + variables[0] + " not downloaded")
     else:
@@ -136,7 +124,7 @@ else:
         frozen = False
     if frozen:
         frozen = False
-        with open(local_path + "test/auto/frozen", "w") as f:
+        with open(local_path + "auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
     print("No additional data found to improve the forecast ")

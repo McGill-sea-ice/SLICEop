@@ -4,7 +4,7 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-out_dir = "/storage/jrieck/SLICEop/downloads/ERA5/"
+out_dir = "/aos/home/jrieck/src/SLICEop/SLICEop/downloads/ERA5/"
 
 # initially download era5 data up to last year and save it to netcdf
 
