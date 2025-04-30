@@ -1,38 +1,39 @@
 #!/bin/bash
 echo "---------- run_weekly.sh -----------"
 echo " "
-#date
-echo ${YEAR}"-"${MONTH}"-"${DAY}
+date
+
+local_path=/aos/home/jrieck/src/SLICEop/SLICEop
 
 source /aos/home/jrieck/miniconda3/etc/profile.d/conda.sh
 
 conda activate sliceop
 
-echo "False" > /storage/jrieck/SLICEop/test/downloads/updatew
-echo "False" > /storage/jrieck/SLICEop/test/prepro/preprow
-echo "False" > /storage/jrieck/SLICEop/test/auto/forecastw
+echo "False" > ${local_path}/downloads/updatew
+echo "False" > ${local_path}/prepro/preprow
+echo "False" > ${local_path}/auto/forecastw
 
 printf "\nUpdating ERA5:\n"
 
-python /storage/jrieck/SLICEop/test/downloads/weekly_ERA5.py
-updatew=$(cat /storage/jrieck/SLICEop/test/downloads/updatew)
+python ${local_path}/downloads/weekly_ERA5.py
+updatew=$(cat ${local_path}/downloads/updatew)
 
 printf "\nPreprocessing:\n"
 
-if [[ "$updatew" == "True" ]]; then
-    python /storage/jrieck/SLICEop/test/prepro/weekly_preprocess.py
+if [[ $updatew == True ]]; then
+    python ${local_path}/prepro/weekly_preprocess.py
 else
     printf "No preprocessing performed because ERA5 could not be updated.\n"
 fi
 
-frozen=$(cat /storage/jrieck/SLICEop/test/auto/frozen)
-preprow=$(cat /storage/jrieck/SLICEop/test/prepro/preprow)
+frozen=$(cat ${local_path}/auto/frozen)
+preprow=$(cat ${local_path}/prepro/preprow)
 
-if [[ "$frozen" == "False" ]]; then
-    if [[ "$preprow" == "True" ]]; then
+if [[ ${frozen} == False ]]; then
+    if [[ ${preprow} == True ]]; then
         printf "\nForecast running\n"
-        python /storage/jrieck/SLICEop/test/auto/weekly_forecast.py
-        forecastw=$(cat /storage/jrieck/SLICEop/test/auto/forecastw)
+        python ${local_path}/auto/weekly_forecast.py
+        forecastw=$(cat ${local_path}/auto/forecastw)
     else
         printf "\nNo forecast issued because the preprocessing was not successful"
     fi
@@ -40,7 +41,7 @@ else
     printf "\nNo forecast issued because St. Lawrence is already frozen"
 fi
 
-python /storage/jrieck/SLICEop/test/auto/weekly_plots.py
+python ${local_path}/auto/weekly_plots.py
 
 echo " "
 echo "-----------------------------------"
