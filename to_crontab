@@ -1,6 +1,13 @@
+################################################################################
+### This is an example of how the different bash scripts in SLICEop/auto/    ###
+### should be scheduled to run with cron                                     ###
+################################################################################
+
 SHELL=/bin/bash
-MAILTO=jan.rieck@mcgill.ca
+MAILTO=name@mail.ca
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+local_path=/aos/home/jrieck/src/SLICEop/SLICEop
 
 # For details see man 4 crontabs
 
@@ -14,13 +21,13 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 # *  *  *  *  * user-name  command to be executed
 
 # run daily script at 10AM
-0 10 * * * /storage/jrieck/SLICEop/auto/run_daily.sh &>> /storage/jrieck/SLICEop/auto/run_daily.log
+0 10 * * * ${local_path}/auto/run_daily.sh &>> ${local_path}/auto/run_daily.log
 
 # run weekly script every Monday at 9AM
-# 0 9 * * 1 /storage/jrieck/SLICEop/auto/run_weekly.sh &>> /storage/jrieck/SLICEop/auto/run_weekly.log
+# 0 9 * * 1 ${local_path}/auto/run_weekly.sh &>> ${local_path}/auto/run_weekly.log
 
 # run monthly script at 10:30AM  on the 7th of each month
-30 10 7 * * /storage/jrieck/SLICEop/auto/run_monthly.sh &>> /storage/jrieck/SLICEop/auto/run_monthly.log
+30 10 7 * * ${local_path}/auto/run_monthly.sh &>> ${local_path}/auto/run_monthly.log
 
-# run yearly script on the 10th of June
-0 10 10 6 * /storage/jrieck/SLICEop/auto/run_yearly.sh &>> /storage/jrieck/SLICEop/auto/run_yearly.log
+# run yearly script at noon on the 10th of June
+0 12 10 6 * ${local_path}/auto/run_yearly.sh &>> ${local_path}/auto/run_yearly.log
