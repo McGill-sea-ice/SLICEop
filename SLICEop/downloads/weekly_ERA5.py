@@ -4,8 +4,8 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
-out_dir = local_path + "downloads/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+out_dir = path + "downloads/"
 
 year = f"{now.year:04d}"
 month = f"{now.month:02d}"
@@ -75,7 +75,7 @@ elif month == "10":
        	    print("ERA5 " + variables[2] + " not downloaded")
     else:
         try:
-            os.remove(local_path + "downloads/ERA5/ERA5_"
+            os.remove(path + "downloads/ERA5/ERA5_"
                       + year + months[2] + "_" + variables[2] +  ".partial.grib")
         except:
             pass
@@ -93,7 +93,7 @@ elif month == "12":
             print("ERA5 " + variables[1] + " not downloaded")
     else:
         try:
-            os.remove(local_path + "downloads/ERA5/ERA5_"
+            os.remove(path + "downloads/ERA5/ERA5_"
                       + year + months[1] + "_" + variables[1] +  ".partial.grib")
         except:
             pass
@@ -110,12 +110,12 @@ elif month == "01":
             print("ERA5 " + variables[0] + " not downloaded")
     else:
         try:
-            os.remove(local_path + "downloads/ERA5/ERA5_"
+            os.remove(path + "downloads/ERA5/ERA5_"
                       + year + months[0] + "_" + variables[0] +  ".partial.grib")
         except:
             pass
 else:
-    with open(local_path + "auto/frozen", "r") as f:
+    with open(path + "auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     if frozen == "True":
@@ -124,12 +124,12 @@ else:
         frozen = False
     if frozen:
         frozen = False
-        with open(local_path + "auto/frozen", "w") as f:
+        with open(path + "auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
     print("No additional data found to improve the forecast ")
 
 # save info on whether data was updated
-with open(local_path + "downloads/updatew", "w") as f:
+with open(path + "downloads/updatew", "w") as f:
     f.write(str("True"))
 f.close()

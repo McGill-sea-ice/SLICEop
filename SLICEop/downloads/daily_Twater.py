@@ -7,7 +7,7 @@ import datetime
 import csv
 import sys
 
-local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
 # function to read data from thermistor (works for files newer than Longueuil.dat4860.dat)
 def read_thermistor_new(path):
@@ -21,9 +21,9 @@ def read_thermistor_new(path):
     return tmp.drop_vars("index").sortby("Date")
 
 # load existing data
-ds_in = xr.open_dataset(local_path + "downloads/Twater/Twater_Longueuil_updated.nc")
+ds_in = xr.open_dataset(path + "downloads/Twater/Twater_Longueuil_updated.nc")
 # get lowest index to add to data
-with open(local_path + "downloads/Twater/next.i", "rb") as f:
+with open(path + "downloads/Twater/next.i", "rb") as f:
     lowest_i = int(f.read())
 f.close()
 print("Adding new data to Twater_Longueuil_updated.nc, starting at Longueuil.dat" + str(lowest_i) + ".dat")
@@ -48,7 +48,7 @@ if tds > 0:
             i += 1
         else:
             break
-    with open(local_path + "downloads/Twater/next.i", "w") as f:
+    with open(path + "downloads/Twater/next.i", "w") as f:
         f.write(str(i))
     f.close()
 else:
@@ -63,20 +63,20 @@ update_smooth["T"] = da_update.T.where(dTdt_ok & (da_update.T < 30.), other=np.n
 updated = xr.merge([ds_in, update_smooth.sortby("Date").resample(Date="1D").mean(dim="Date")]).compute()
 # save updated dataset
 ds_in.close()
-updated.to_netcdf(local_path + "downloads/Twater/Twater_Longueuil_updated.nc", mode="w")
+updated.to_netcdf(path + "downloads/Twater/Twater_Longueuil_updated.nc", mode="w")
 # save info on whether data was updated
-with open(local_path + "downloads/Twater/updated", "w") as f:
+with open(path + "downloads/Twater/updated", "w") as f:
     f.write(str("True"))
 f.close()
 # check if St. Lawrence is already frozen
 if updated.T.isel(Date=-1).values < 0.75:
-    with open(local_path + "auto/frozen", "r") as f:
+    with open(path + "auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     if frozen == "False":
-        with open(local_path + "auto/frozenDate", "w") as f:
+        with open(path + "auto/frozenDate", "w") as f:
             f.write(str(updated.Date.isel(Date=-1).values)[0:10])
         f.close()
-        with open(local_path + "auto/frozen", "w") as f:
+        with open(path + "auto/frozen", "w") as f:
             f.write(str("True"))
         f.close()

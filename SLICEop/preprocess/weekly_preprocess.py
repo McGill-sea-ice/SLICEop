@@ -5,15 +5,11 @@ import numpy as np
 import xarray as xr
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-#day = now.day
-
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = int(os.environ["DAY"])
+year = str(now.year)
+month = f"{now.month:02d}"
+day = now.day
 
 if month in ["01", "02", "03", "04"]:
     year = str(int(year) - 1)
@@ -32,20 +28,20 @@ method = ["mean", "sum", "mean"]
 monthly_vars = xr.Dataset()
 
 for v in range(0, len(variables)):
-    era5name = local_path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".grib"
-    era5partialname = local_path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".partial.grib"
+    era5name = path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".grib"
+    era5partialname = path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".partial.grib"
     mslice = slice(year + "-" + months[v] + "-01", None)
     if int(months[v]) < int(month):
-        seas51name = local_path + "downloads/SEAS51/SEAS51_" + year + months[v] + "_" + variables[v] + ".grib"
+        seas51name = path + "downloads/SEAS51/SEAS51_" + year + months[v] + "_" + variables[v] + ".grib"
     else:
         if day < 7:
             if month == "01":
                mm1 = "12"
             else:
                 mm1 = f"{(int(month) - 1):02d}"
-            seas51name = local_path + "downloads/SEAS51/SEAS51_" + year + mm1 + "_" + variables[v] + ".grib"
+            seas51name = path + "downloads/SEAS51/SEAS51_" + year + mm1 + "_" + variables[v] + ".grib"
         else:
-            seas51name = local_path + "downloads/SEAS51/SEAS51_" + year + month + "_" + variables[v] + ".grib"
+            seas51name = path + "downloads/SEAS51/SEAS51_" + year + month + "_" + variables[v] + ".grib"
     if os.path.isfile(era5name):
         print("using " + variables[v] + " from ERA5")
         era5 = xr.open_dataset(era5name, engine="cfgrib", decode_timedelta=True, backend_kwargs={"indexpath": ""})
@@ -130,8 +126,8 @@ for v in range(0, len(variables)):
     else:
         sys.exit(variables[v] + " not found")
 
-monthly_vars.to_netcdf(local_path + "prepro/input_forecast_weekly.nc")
+monthly_vars.to_netcdf(path + "prepro/input_forecast_weekly.nc")
 
-with open(local_path + "prepro/preprow", "w") as f:
+with open(path + "prepro/preprow", "w") as f:
     f.write(str("True"))
 f.close()

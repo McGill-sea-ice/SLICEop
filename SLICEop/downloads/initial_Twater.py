@@ -7,13 +7,13 @@ import datetime
 import csv
 
 requiredhost = "crunch"
-local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 myhost = os.uname()[1]
 if requiredhost not in myhost:
     sys.exit("Not on " + requiredhost + ", water temperatures not accessible from " + myhost)
 
 # first we load the data that was created before the automatic transmission of the water temperatures from the thermistor
-longueuil_in = pd.read_csv(local_path + "downloads/Twater/Tw_Longueuil_updated.csv").to_xarray().set_coords("Date").isel(index=slice(None, -1))
+longueuil_in = pd.read_csv(path + "downloads/Twater/Tw_Longueuil_updated.csv").to_xarray().set_coords("Date").isel(index=slice(None, -1))
 # convert time axis and variable names for easier use
 longueuil_in["Date"] = pd.DatetimeIndex(longueuil_in['Date'].values)
 longueuil_in = longueuil_in.rename({"T (oC)": "T"}).drop_vars(["Unnamed: 0", "Unnamed: 1", "Unnamed: 2"])
@@ -36,7 +36,7 @@ extension["T"] = ("Date", twoclim)
 longueuil_ext = xr.merge([longueuil_in, extension.sel(Date=slice(None, "2023-11-14"))])
 # now we add thermistor data from 2023-11-15 to 2024-12-16 because this data has been re-transfered with correct time stamps
 # we do the same converting/renaming as before
-thermistor = pd.read_csv(local_path + "downloads/Twater/StationLongueuil.dat", sep=",", header=3, low_memory=False).to_xarray()
+thermistor = pd.read_csv(path + "downloads/Twater/StationLongueuil.dat", sep=",", header=3, low_memory=False).to_xarray()
 thermistor = thermistor.rename({"Unnamed: 0": "Date", "Smp.1": "T"}).drop_vars(("Unnamed: 1", "Smp", "Smp.2", "Min", "Smp.3"))
 thermistor = thermistor.set_coords("Date")
 thermistor["Date"] = pd.DatetimeIndex(thermistor['Date'].values)
@@ -83,11 +83,11 @@ da_2024_12_17 = da.resample(Date="1D").mean(dim="Date")
 combined = xr.merge([combined, da_2024_12_17])
 # This is data that won't change and requires different treatment than the data that follows, so we will save it to a permanent file.
 # Everything that comes after 2024-12-17 is then added to this file daily and saved to a updated file.
-combined.to_netcdf(local_path + "downloads/Twater/Twater_Longueuil_permanent.nc")
+combined.to_netcdf(path + "downloads/Twater/Twater_Longueuil_permanent.nc")
 # The file for the updated dataset contains the same as the permanent for now.
-combined.to_netcdf(local_path + "downloads/Twater/Twater_Longueuil_updated.nc")
+combined.to_netcdf(path + "downloads/Twater/Twater_Longueuil_updated.nc")
 # From 2024-12-18 onward thermistor data has a timestamp and we can easliy add it to existing files. The first to add is file number
 # 4860, we save that number to the file `next.i` for the daily updating script to read.
-with open(local_path + "downloads/Twater/next.i", "w") as f:
+with open(path + "downloads/Twater/next.i", "w") as f:
     f.write("4860")
 f.close()

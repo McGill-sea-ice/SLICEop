@@ -5,13 +5,10 @@ import numpy as np
 import xarray as xr
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
+year = str(now.year)
+month = f"{now.month:02d}"
 
 if month in ["01", "02", "03", "04"]:
     year = str(int(year) - 1)
@@ -27,11 +24,11 @@ method = ["mean", "sum", "mean"]
 monthly_vars = xr.Dataset()
 
 for v in range(0, len(variables)):
-    era5name = local_path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".grib"
+    era5name = path + "downloads/ERA5/ERA5_" + year + months[v] + "_" + variables[v] +  ".grib"
     if int(months[v]) < int(month):
-        seas51name = local_path + "downloads/SEAS51/SEAS51_" + year + months[v] + "_" + variables[v] + ".grib"
+        seas51name = path + "downloads/SEAS51/SEAS51_" + year + months[v] + "_" + variables[v] + ".grib"
     else:
-        seas51name = local_path + "downloads/SEAS51/SEAS51_" + year + month + "_" + variables[v] + ".grib"
+        seas51name = path + "downloads/SEAS51/SEAS51_" + year + month + "_" + variables[v] + ".grib"
     if os.path.isfile(era5name):
         print("using " + variables[v] + " from ERA5")
         era5 = xr.open_dataset(era5name, engine="cfgrib", decode_timedelta=True, backend_kwargs={"indexpath": ""})
@@ -75,8 +72,8 @@ for v in range(0, len(variables)):
     else:
         sys.exit(variables[v] + " not found")
 
-monthly_vars.to_netcdf(local_path + "prepro/input_forecast.nc")
+monthly_vars.to_netcdf(path + "prepro/input_forecast.nc")
 
-with open(local_path + "prepro/prepro", "w") as f:
+with open(path + "prepro/prepro", "w") as f:
     f.write(str("True"))
 f.close()

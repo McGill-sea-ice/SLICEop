@@ -4,8 +4,8 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-local_path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
-out_dir = local_path + "downloads/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+out_dir = path + "downloads/"
 
 year = f"{now.year:04d}"
 month = f"{now.month:02d}"
@@ -182,7 +182,7 @@ elif month in ["01", "02", "03", "04"]:
         updatey = False
         print("ERA5 " + variables[0] + " not yet available, using SEAS5.1")
 else:
-    with open(local_path + "auto/frozen", "r") as f:
+    with open(path + "auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     if frozen == "True":
@@ -191,16 +191,16 @@ else:
         frozen = False
     if frozen:
         frozen = False
-        with open(local_path + "auto/frozen", "w") as f:
+        with open(path + "auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
     print("no forecast can be made before July")
 
 # save info on whether data was updated
-with open(local_path + "downloads/updatem", "w") as f:
+with open(path + "downloads/updatem", "w") as f:
     f.write(str("True"))
 f.close()
 if updatey:
-    with open(local_path + "downloads/updatey", "w") as f:
+    with open(path + "downloads/updatey", "w") as f:
         f.write(str("True"))
     f.close()

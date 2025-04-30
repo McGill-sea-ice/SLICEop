@@ -6,13 +6,10 @@ import xarray as xr
 import pandas as pd
 
 now = datetime.datetime.now()
-path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year - 1)
-#month = f"{now.month:02d}"
-
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
+year = str(now.year - 1)
+month = f"{now.month:02d}"
 
 if month != "06":
     sys.exit("This script should run in June, something went wrong.")
@@ -156,4 +153,3 @@ monthly_predictors.drop_vars(["number", "surface"]).to_netcdf(path + "prepro/mon
 with open(path + "prepro/preproy", "w") as f:
     f.write(str("True"))
 f.close()
-
