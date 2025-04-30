@@ -1,3 +1,9 @@
+'''daily_MODIS
+
+Download the MODIS/Terra true color image from the day before from NASA
+worldview within 45.1855N - 45.8297N, 74.2417W - 73.261W
+
+'''
 import os
 import datetime
 import requests

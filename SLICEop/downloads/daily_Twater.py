@@ -1,3 +1,15 @@
+'''daily_Twater
+
+Process the water temperature data from the Longueuil water treatment plant
+daily. The data with a 1-minute resolution is automatically send to a server
+and this script runs a quality control on this data, computes the daily average
+and adds this average to the existing time series of daily-averaged water
+temperature.
+Additionally, this script verifies if the St. Lawrence river is frozen based
+on the temperature data. If the water temperature at the treatment plant is
+below 0.75 deg. Celsius, the river is assumed to be frozen.
+
+'''
 import pandas as pd
 import xarray as xr
 import numpy as np
