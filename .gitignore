@@ -1,3 +1,5 @@
 .ipynb_checkpoints
 *.nc
 *.grib
+*.dat
+*.csv
