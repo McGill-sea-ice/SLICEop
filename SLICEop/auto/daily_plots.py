@@ -8,38 +8,32 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-#day = f"{now.day:02d}"
+year = str(now.year)
+month = f"{now.month:02d}"
+day = f"{now.day:02d}"
 
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = os.environ["DAY"]
+if now.month < 7:
+    year = f"{(now.year - 1):04d}"
 
-#if now.month < 7:
-#    year = f"{(now.year - 1):04d}"
-
-if int(month) <= 7:
-    year = f"{(int(year) - 1):04d}"
 yesterday = np.datetime64(year + "-" + month + "-" + day) - np.timedelta64(1, "D")
 start = np.datetime64(year + "-07-01")
-tw = xr.open_dataset(local_path + "downloads/Twater/Twater_Longueuil_updated.nc").sel(Date=slice(start, yesterday))
-tw_c = xr.open_dataset(local_path + "prepro/Twater_Longueuil_preprocessed").T_no_offset.groupby("Date.dayofyear").mean("Date").values
+tw = xr.open_dataset(path + "downloads/Twater/Twater_Longueuil_updated.nc").sel(Date=slice(start, yesterday))
+tw_c = xr.open_dataset(path + "prepro/Twater_Longueuil_preprocessed").T_no_offset.groupby("Date.dayofyear").mean("Date").values
 tw_c1 = tw_c[int(tw.Date[0].dt.dayofyear.values)::]
 tw_c2 = tw_c[0:59]
 tw_clim = np.hstack([tw_c1, tw_c2])
-climtime = pd.date_range(start=datetime.datetime.strptime(year + " " + str(int(tw.Date[0].dt.dayofyear.values)), "%Y %j"), 
+climtime = pd.date_range(start=datetime.datetime.strptime(year + " " + str(int(tw.Date[0].dt.dayofyear.values)), "%Y %j"),
                          end=datetime.datetime.strptime(str(int(year) + 1) + " " + str(59), "%Y %j"),
                          freq="1D")
 
-with open("frozen", "r") as f:
+with open(path + "auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
 if frozen == "True":
     frozen = True
-    with open("frozenDate", "r") as f:
+    with open(path + "auto/frozenDate", "r") as f:
         frozenDate = f.read()
     f.close()
 else:
@@ -60,7 +54,7 @@ for l in ["fr_CA", "en_CA"]:
         locale.setlocale(locale.LC_TIME, l)
     except:
         pass
-    xticklabels = [datetime.datetime.strptime("2000 " + f"{xtickmonths[i]:02d}" + " " 
+    xticklabels = [datetime.datetime.strptime("2000 " + f"{xtickmonths[i]:02d}" + " "
                                               + f"{xtickdays[i]:02d}", '%Y %m %d').strftime('%d %b')
                                               + "      " for i in range(0, len(xticks))]
     if l == 'fr_CA':
@@ -90,5 +84,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.set_title(title, fontweight="bold")
     plt.legend()
     plt.subplots_adjust(left=0.15, bottom=0.2, right=0.9)
-    plt.savefig("Twater_" + l[0:2] +" .png", dpi=300)
-
+    plt.savefig(path + "auto/Twater_" + l[0:2] +" .png", dpi=300)

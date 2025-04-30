@@ -8,35 +8,29 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-#day = f"{now.day:02d}"
+year = str(now.year)
+month = f"{now.month:02d}"
+day = f"{now.day:02d}"
 
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = os.environ["DAY"]
-
-with open("frozen", "r") as f:
+with open(path + "auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
 
 if frozen == 'True':
     frozen = True
-    with open("frozenDate", "r") as f:
+    with open(path + "auto/frozenDate", "r") as f:
         frozenDOY = int(f.read())
     f.close()
 else:
     frozen = False
 
-#if now.month < 7:
-#    year = f"{(now.year - 1):04d}"
 if int(month) < 7:
     year = f"{(int(year) - 1):04d}"
 
-weekly_path = local_path + "auto/" + year + "FUDweekly"
-monthly_path = local_path + "auto/" + year + "FUDmonthly"
+weekly_path = path + "auto/" + year + "FUDweekly"
+monthly_path = path + "auto/" + year + "FUDmonthly"
 
 if os.path.isfile(weekly_path):
     FUDweekly = pd.read_csv(weekly_path, index_col=[0, 1]).to_xarray()
@@ -128,6 +122,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.text(0.02, 0.98, year, transform = ax1.transAxes, fontsize=18, ha="left", va="top")
     ax1.set_title(title, fontweight="bold")
     plt.subplots_adjust(left=0.2, bottom=0.2, right=0.95)
-    plt.savefig("forecast" + l[0:2] + ".jpg", dpi=300)
-
-
+    plt.savefig(path + "auto/forecast" + l[0:2] + ".jpg", dpi=300)

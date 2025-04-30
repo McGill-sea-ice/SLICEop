@@ -7,14 +7,11 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 now = datetime.datetime.now()
-local_path = "/storage/jrieck/SLICEop/test/"
+path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
-#year = str(now.year)
-#month = f"{now.month:02d}"
-
-year = os.environ["YEAR"]
-month = os.environ["MONTH"]
-day = os.environ["DAY"]
+year = str(now.year)
+month = f"{now.month:02d}"
+day = f"{now.day:02d}"
 
 if month in ["01", "02", "03", "04"]:
     year = str(int(year) - 1)
@@ -25,9 +22,9 @@ variables = ["2m_temperature", "snowfall", "total_cloud_cover"]
 
 model = LinearRegression()
 
-input_forecast = xr.open_dataset(local_path + "prepro/input_forecast_weekly.nc")
+input_forecast = xr.open_dataset(path + "prepro/input_forecast_weekly.nc")
 input_forecast_m = input_forecast.drop_vars([v for v in variables if v in input_forecast.variables])
-predictors = xr.open_dataset(local_path + "prepro/monthly_predictors.nc")
+predictors = xr.open_dataset(path + "prepro/monthly_predictors.nc")
 
 predictor_frame = predictors[[v for v in variables]].to_dataframe()
 predictor_frame_m = predictors.rename({v: v + "_m" for v in variables})[[v + "_m" for v in variables]].to_dataframe()
@@ -42,14 +39,12 @@ else:
     else:
         forecast_date_m = np.datetime64(str(y) + "-01-01") + np.timedelta64(int(np.around(forecast_m[0]-1)))
 
-if os.path.isfile(local_path + "/auto/" + year + "FUDweekly"):
-    with open(local_path + "/auto/" + year + "FUDweekly", "a") as f:
-        #f.write("\n" + str(now)[0:10] + ",0," + str(int(np.around(forecast_m[0]))))
+if os.path.isfile(path + "/auto/" + year + "FUDweekly"):
+    with open(path + "/auto/" + year + "FUDweekly", "a") as f:
         f.write("\n" + year + "-" + month + "-" + day + ",0," + str(int(np.around(forecast_m[0]))))
     f.close()
 else:
-    with open(local_path + "/auto/" + year + "FUDweekly", "a") as f:
-        #f.write("time,FUD\n" + str(now)[0:10] + ",0," + str(int(np.around(forecast_m[0]))))
+    with open(path + "/auto/" + year + "FUDweekly", "a") as f:
         f.write("time,number,FUD\n" + year + "-" + month + "-" + day + ",0," + str(int(np.around(forecast_m[0]))))
     f.close()
 
@@ -69,16 +64,15 @@ if "number" in input_forecast.dims:
                 forecast_date = np.datetime64(str(y) + "-01-01") + np.timedelta64(int(np.around(forecast[0])))
             else:
                 forecast_date = np.datetime64(str(y) + "-01-01") + np.timedelta64(int(np.around(forecast[0]-1)))
-        if os.path.isfile(local_path + "/auto/" + year + "FUDweekly"):
-            with open(local_path + "/auto/" + year + "FUDweekly", "a") as f:
-                #f.write("\n" + str(now)[0:10] + "," + str(n+1) + "," + str(int(np.around(forecast[0]))))
+        if os.path.isfile(path + "/auto/" + year + "FUDweekly"):
+            with open(path + "/auto/" + year + "FUDweekly", "a") as f:
                 f.write("\n" + year + "-" + month + "-" + day + "," + str(n+1) + "," + str(int(np.around(forecast[0]))))
             f.close()
         else:
             sys.exit("Output of ensemble mean forecast not written, exiting.")
 
 
-with open(local_path + "/auto/forecastw", "w") as f:
+with open(path + "/auto/forecastw", "w") as f:
     f.write(str("True"))
 f.close()
 
