@@ -1,17 +1,30 @@
+''' monthly_SEAS51_ERA5
+
+Download the monthly predictors from either the seasonal forecast
+SEAS5.1 or the reanalysis ERA5 depending on which is available. This script is
+supposed to be called once a month, at the beginning of the month after the
+new seasonal forecast becomes available.
+
+'''
 import os
 import datetime
 import cdsapi
 import numpy as np
 
+# define paths
 now = datetime.datetime.now()
 path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 out_dir = path + "downloads/"
 
+# extract year, month, day from `datetime.datetime.now
 year = f"{now.year:04d}"
 month = f"{now.month:02d}"
 day = f"{(now.day - 1):02d}"
 
+# define a function to download the ERA5 data
 def download_era5(var, month, year, output_dir, lats, lons):
+    # define the filename. if a file of this name is already present locally,
+    # do not download it again
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".grib"
     if os.path.isfile(filename):
         print(filename + " is already present, no need to download")
@@ -60,7 +73,10 @@ def download_era5(var, month, year, output_dir, lats, lons):
                 os.remove(filename)
     return
 
+# define a function to download the SEAS5.1 data
 def download_seas51(var, month, year, output_dir, lats, lons):
+    # define the filename. if a file of this name is already present locally,
+    # do not download it again
     filename = output_dir + "SEAS51_" + str(year) + month + "_" + var + ".grib"
     if os.path.isfile(filename):
         print(filename + " is already present, no need to download")
@@ -128,12 +144,15 @@ def download_seas51(var, month, year, output_dir, lats, lons):
                 os.remove(filename)
     return
 
+# define the variables and the respective months to download as well as the
+# desired region
 variables = ['2m_temperature', 'snowfall', 'total_cloud_cover']
 months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
 lons = np.array([-77.25, -73.25])
 updatey = False
 
+# depending on the month, download SEAS5.1 or try to download ERA5 instead
 if month in ["07", "08", "09"]:
     for variable in variables:
         download_seas51(variable, month, year, out_dir + "SEAS51/", lats, lons)
@@ -182,6 +201,8 @@ elif month in ["01", "02", "03", "04"]:
         updatey = False
         print("ERA5 " + variables[0] + " not yet available, using SEAS5.1")
 else:
+    # if in May or June, make sure to reset the variable `frozen` to `False`
+    # in preparation for the next winter's forecast
     with open(path + "auto/frozen", "r") as f:
         frozen = f.read()
     f.close()

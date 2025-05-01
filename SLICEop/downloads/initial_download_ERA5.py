@@ -1,3 +1,11 @@
+''' initial_download_ERA5
+
+This script downloads the required ERA5 data to define the three predictors
+that will go into the Multiple Linear Regression (September total_cloud_cover,
+November snowfall, December 2m_temperature). The range of years to download is
+set by `start_year` and `end_year`.
+
+'''
 import os
 import datetime
 import cdsapi
@@ -6,15 +14,21 @@ import numpy as np
 now = datetime.datetime.now()
 out_dir = "/aos/home/jrieck/src/SLICEop/SLICEop/downloads/ERA5/"
 
-# initially download era5 data up to last year and save it to netcdf
+# set first and last year of range to download
+start_year = 1992
+end_year = 2023
 
+# define a function that downloads the required ERA5 data
 def download_era5(var, month, year, output_dir, lats, lons):
+    # define filename and check if it is already present locally, if yes no
+    # download is triggered.
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".grib"
     if os.path.isfile(filename):
         print(filename + " is already present, no need to download")
         return
     else:
         print("Downloading " + var + " for " + str(year) + month + " from ERA5")
+        # using the Climate Data Store API to download the data
         try:
             client = cdsapi.Client(retry_max=5)
             client.retrieve(
@@ -52,14 +66,13 @@ def download_era5(var, month, year, output_dir, lats, lons):
                 filename)
         except Exception as e:
             print(e)
-            # Delete the partially downloaded file.
+            # Delete the partially downloaded file in case something went wrong
             if os.path.isfile(filename):
                 os.remove(filename)
     return
 
-start_year = 2002
-end_year = 2023
-
+# define the variables and their respective months to download, as well as 
+# the region
 variables = ['2m_temperature', 'snowfall', 'total_cloud_cover']
 months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
