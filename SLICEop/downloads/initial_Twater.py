@@ -29,7 +29,14 @@ requiredhost = "crunch"
 path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 myhost = os.uname()[1]
 if requiredhost not in myhost:
-    sys.exit("Not on " + requiredhost + ", water temperatures not accessible from " + myhost)
+    sys.exit("Not on " + requiredhost +
+             ", water temperatures not accessible from " + myhost)
+
+# if Twater_Longueuil_permanent.nc already exists, this script has already
+# been run successfully and we do not run it again!
+if os.path.isfile(path + "downloads/Twater/Twater_Longueuil_permanent.nc"):
+    sys.exit(path + "downloads/Twater/Twater_Longueuil_permanent.nc already"
+             + " exists, initial_Twater.py has already been executed!")
 
 # first we load the data that was created before the automatic transmission of
 # the water temperatures from the thermistor
