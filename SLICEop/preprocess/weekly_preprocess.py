@@ -36,7 +36,7 @@ for v in range(0, len(variables)):
     else:
         if day < 7:
             if month == "01":
-               mm1 = "12"
+                mm1 = "12"
             else:
                 mm1 = f"{(int(month) - 1):02d}"
             seas51name = path + "downloads/SEAS51/SEAS51_" + year + mm1 + "_" + variables[v] + ".grib"

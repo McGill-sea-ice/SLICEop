@@ -101,7 +101,7 @@ thermistor_daily = thermistor.resample(Date="1D").mean(dim="Date")
 # combine with older data
 longueuil_up2thermistor = longueuil_ext.sel(
     Date=slice(None, thermistor_daily.Date.isel(Date=0))
-    ).isel(Date=slice(None, -1))
+    )
 combined = xr.merge([longueuil_up2thermistor, thermistor_daily])
 # need to add thermistor data from 2024-12-17 onwards (Longueuil.dat4835.dat)
 # Longueuil.dat4835.dat to Longueuil.dat4844.dat do not have timestamps... so
