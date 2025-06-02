@@ -1,3 +1,9 @@
+''' daily_plots
+
+Plot the time series of water temperature in Longueuil each day with the
+updated values from the thermistor.
+
+'''
 import os
 import sys
 import datetime
@@ -7,20 +13,38 @@ import xarray as xr
 import pandas as pd
 from matplotlib import pyplot as plt
 
+# define path
 now = datetime.datetime.now()
 path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
 
+# extract year, month and day from `datetime.datetime.now()`
 year = str(now.year)
 month = f"{now.month:02d}"
 day = f"{now.day:02d}"
 
+# the "year" of the forecast remains the same even if we switch into the next
+# year
 if now.month < 7:
     year = f"{(now.year - 1):04d}"
 
-yesterday = np.datetime64(year + "-" + month + "-" + day) - np.timedelta64(1, "D")
+# define the limits of the time series to plot
+# we want to plot from July 1 of 'year' until yesterday
+# create a datetim64 for yesterday
+yesterday = np.datetime64(
+    year + "-" + month + "-" + day
+    ) - np.timedelta64(1, "D")
+# datetime64 of the start (July 1)
 start = np.datetime64(year + "-07-01")
-tw = xr.open_dataset(path + "downloads/Twater/Twater_Longueuil_updated.nc").sel(Date=slice(start, yesterday))
-tw_c = xr.open_dataset(path + "prepro/Twater_Longueuil_preprocessed").T_no_offset.groupby("Date.dayofyear").mean("Date").values
+# load the time series of water temperature including the most recent and
+# extract the required date range
+tw = xr.open_dataset(
+    path + "downloads/Twater/Twater_Longueuil_updated.nc"
+    ).sel(Date=slice(start, yesterday))
+# load the preprocessed data and compute a climatological seasonal cycle
+tw_c = xr.open_dataset(
+    path + "prepro/Twater_Longueuil_preprocessed"
+    ).T_no_offset.groupby("Date.dayofyear").mean("Date").values
+# offest the climatology so that it runs from
 tw_c1 = tw_c[int(tw.Date[0].dt.dayofyear.values)::]
 tw_c2 = tw_c[0:59]
 tw_clim = np.hstack([tw_c1, tw_c2])
