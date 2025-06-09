@@ -7,13 +7,13 @@ date
 
 # set 'requiredhost' because the daily water temperature data is only available
 # on 'crunch'
-requiredhost=crunch
+requiredhost=$(echo $sliceop_twater_host)
 # define path to SLICEop
-local_path=/aos/home/jrieck/src/SLICEop/SLICEop
-backup=/aos/home/jrieck/SLICEop_backup_data/
+local_path=$(echo $sliceop_path)
+backup=$(echo $sliceop_backup_path)
 
 # load conda environment
-source /aos/home/jrieck/miniconda3/etc/profile.d/conda.sh
+source $(echo $sliceop_conda_path)
 conda activate sliceop
 
 # make sure 'updated' is False, indicating that the daily update was not

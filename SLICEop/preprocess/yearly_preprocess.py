@@ -13,7 +13,7 @@ import pandas as pd
 
 # define path
 now = datetime.datetime.now()
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = os.environ["sliceop_path"]
 
 # extract year, month from `datetime.datetime.now()`
 year = str(now.year - 1)

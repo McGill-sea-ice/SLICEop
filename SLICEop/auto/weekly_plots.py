@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 now = datetime.datetime.now()
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = os.environ["sliceop_path"]
 
 year = str(now.year)
 month = f"{now.month:02d}"

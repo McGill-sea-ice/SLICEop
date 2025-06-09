@@ -12,7 +12,8 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-out_dir = "/aos/home/jrieck/src/SLICEop/SLICEop/downloads/ERA5/"
+path = os.environ["sliceop_path"]
+out_dir = path + "downloads/ERA5/"
 
 # set first and last year of range to download
 start_year = 1992
@@ -71,7 +72,7 @@ def download_era5(var, month, year, output_dir, lats, lons):
                 os.remove(filename)
     return
 
-# define the variables and their respective months to download, as well as 
+# define the variables and their respective months to download, as well as
 # the region
 variables = ['2m_temperature', 'snowfall', 'total_cloud_cover']
 months = ['12', '11', '09']

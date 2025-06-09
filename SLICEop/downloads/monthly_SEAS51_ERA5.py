@@ -13,7 +13,7 @@ import numpy as np
 
 # define paths
 now = datetime.datetime.now()
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = os.environ["sliceop_path"]
 out_dir = path + "downloads/"
 
 # extract year, month, day from `datetime.datetime.now

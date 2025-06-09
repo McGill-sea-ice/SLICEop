@@ -25,8 +25,8 @@ import csv
 
 # define path and verify that we are on crunch (the thermistor data from the
 # water treatment plant are tranferred to crunch and are only accessible there)
-requiredhost = "crunch"
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+requiredhost=$(echo $sliceop_twater_host)
+path = os.environ["sliceop_path"]
 myhost = os.uname()[1]
 if requiredhost not in myhost:
     sys.exit("Not on " + requiredhost +

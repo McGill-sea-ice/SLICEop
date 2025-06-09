@@ -1,7 +1,7 @@
-local_path=/aos/home/jrieck/src/SLICEop/SLICEop
+#!/bin/bash
+local_path=$(echo $sliceop_path)
 
-source /aos/home/jrieck/miniconda3/etc/profile.d/conda.sh
-
+source $(echo $sliceop_conda_path)
 conda activate sliceop
 
 if [ ! -e ${local_path}/downloads/updatew ]; then
