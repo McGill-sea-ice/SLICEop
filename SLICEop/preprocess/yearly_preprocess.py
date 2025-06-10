@@ -15,9 +15,14 @@ import pandas as pd
 now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
 
-# extract year, month from `datetime.datetime.now()`
-year = str(now.year - 1)
-month = f"{now.month:02d}"
+# if running TEST, take year, month from environment variables
+# otherwise extract year, month from `datetime.datetime.now
+if os.environ["TEST"]=="True":
+    year = f"{(int(os.environ["YEAR"]) - 1):04d}"
+    month = os.environ["MONTH"]
+else:
+    year = f"{(now.year - 1):04d}"
+    month = f"{now.month:02d}"
 
 # exit if the month is not June, this script should only run in June!
 if month != "06":

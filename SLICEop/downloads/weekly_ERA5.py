@@ -19,10 +19,16 @@ now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
 out_dir = path + "downloads/"
 
-# extract year, month, day from `datetime.datetime.now
-year = f"{now.year:04d}"
-month = f"{now.month:02d}"
-day = int(now.day)
+# if running TEST, take year, month, day from environment variables
+# otherwise extract year, month, day from `datetime.datetime.now
+if os.environ["TEST"]=="True":
+    year = os.environ["YEAR"]
+    month = os.environ["MONTH"]
+    day = int(os.environ["DAY"])
+else:
+    year = f"{now.year:04d}"
+    month = f"{now.month:02d}"
+    day = int(now.day)
 
 # define a function to download the ERA5 data
 def download_era5(var, month, year, output_dir, lats, lons):

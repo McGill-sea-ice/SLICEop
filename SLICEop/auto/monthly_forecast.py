@@ -20,10 +20,16 @@ from sklearn.linear_model import LinearRegression
 now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
 
-# extract year, month and day from `datetime.datetime.now()`
-year = str(now.year)
-month = f"{now.month:02d}"
-day = f"{now.day:02d}"
+# if running TEST, take year, month, day from environment variables
+# otherwise extract year, month, day from `datetime.datetime.now
+if os.environ["TEST"]=="True":
+    year = os.environ["YEAR"]
+    month = os.environ["MONTH"]
+    day = os.environ["DAY"]
+else:
+    year = f"{now.year:04d}"
+    month = f"{now.month:02d}"
+    day = f"{now.day:02d}"
 
 # the "year" of the forecast remains the same even if we switch into the next
 # year's Jan., Feb., Mar., Apr.
