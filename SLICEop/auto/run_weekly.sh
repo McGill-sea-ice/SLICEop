@@ -58,8 +58,10 @@ fi
 
 # if weekly forecast was successful, plot the data
 forecastw=$(cat ${local_path}/auto/forecastw)
-if [[ ${forecastm} == True ]]; then
-    python ${local_path}/auto/weekly_plots.py
+if [[ ${TEST} != True]]; then
+    if [[ ${forecastm} == True ]]; then
+        python ${local_path}/auto/weekly_plots.py
+    fi
 fi
 
 echo " "

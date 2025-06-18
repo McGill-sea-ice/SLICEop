@@ -58,10 +58,11 @@ fi
 
 # if monthly forecast was successful, plot the data
 forecastm=$(cat ${local_path}/auto/forecastm)
-if [[ ${forecastm} == True ]]; then
-    python ${local_path}/auto/monthly_plots.py
+if [[ ${TEST} != True ]]; then
+    if [[ ${forecastm} == True ]]; then
+        python ${local_path}/auto/monthly_plots.py
+    fi
 fi
-
 
 echo " "
 echo "-----------------------------------"
