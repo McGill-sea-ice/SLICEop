@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ECharts</title>
+    <!-- Include the ECharts file you just downloaded -->
+    <script src="echarts.js"></script>
+    <script src="jquery-3.7.1.min.js"></script>
+  </head>
+  <body>
+    <style>
+        #main,
+        html,
+        body {
+          width: 99%;
+        }
+        #main {
+          height: 820px;
+        }
+    </style>
+    <!-- Prepare a DOM with a defined width and height for ECharts -->
+    <div id="main"></div>
+    <!-- The following need to be replaced by actually loading json files -->
+    <script src="sliceop_data.js"></script>
+    <script src="fuds.js"></script>
+    <script src="colormap.js"></script>
+    <script src="frozen.js"></script>
+    <script type="text/javascript">
+      // Initialize the echarts instance based on the prepared dom
+      var myChart = echarts.init(document.getElementById('main'));
+            window.addEventListener('resize', function() {
+            myChart.resize();
+            });
+      var option;
+      var seriesData = datain.years.map(name => {
+          return {
+              name: name,
+              type: 'line',
+              triggerLineEvent: true,
+              emphasis: { focus: 'series' },
+              //symbol: 'none',
+              z: 2,
+              data: datain[name],
+              color: color[name],
+              markLine : {
+                  silent: true,
+                  symbol: ['none', 'none'],
+                  label: {
+                      position: 'end'
+                  },
+                  data : [{
+                      xAxis : fud[name],
+                      label: {
+                          color: color[name],
+                          backgroundColor: 'rgba(210,210,210,0.3)',
+                          borderColor: 'rgba(110,110,110,0.3)',
+                          rotate: 90,
+                          distance: 31,
+                          formatter: name
+                      },
+                  }]
+              }
+          }
+      })
+      legend = datain.years
+      legend = legend.concat(["clim"])
+      let legendSelect = {};
+      for (let i = 0; i <= datain.years.length - 2; i++) {
+          legendSelect[datain.years[i]] = false;
+      }
+
+      seriesData = seriesData.concat([{
+          name: 'clim',
+          type: 'line',
+          emphasis: { focus: 'none' },
+          data: datain['clim'],
+          symbol: 'none',
+          color: '#000000',
+          lineStyle: {
+              normal: {
+                  width: 4
+              }
+          },
+          z: 1,
+          markLine : {
+              silent: true,
+              symbol: ['none', 'none'],
+              label: {
+                  position: 'middle',
+                  fontWeight: 'bold'
+              },
+              data : [{
+                  xAxis : fud['clim'],
+                  label: {
+                      formatter: 'average freeze-up date'
+                  },
+              }],
+              lineStyle: {
+                  normal: {
+                      width: 2
+                  }
+              }
+          }
+      }])
+      seriesData = seriesData.concat([{
+          name: 'min',
+          type: 'line',
+          stack: 'confidence-band',
+          silent: true,
+          emphasis: { focus: 'none' },
+          data: datain['clim-std'],
+          lineStyle: {
+            opacity: 0
+          },
+          symbol: 'none',
+          z: 1,
+          tooltip: {show: false}
+      }])
+      seriesData = seriesData.concat([{
+          name: 'max',
+          type: 'line',
+          stack: 'confidence-band',
+          silent: true,
+          emphasis: { focus: 'none' },
+          data: datain['clim+std'],
+          lineStyle: {
+            opacity: 0
+          },
+          areaStyle: {
+            color: '#ccc'
+          },
+          symbol: 'none',
+          z: 1,
+          tooltip: {show: false}
+      }])
+      if (!frozen) {
+          seriesData = seriesData.concat([{
+              name: 'forecast',
+              type: 'line',
+              symbol: 'none',
+              lineStyle: {
+                opacity: 0
+              },
+              z: 2,
+              data: datain[datain.years.slice(-1)],
+              color: color[datain.years.slice(-1)],
+              markLine : {
+                  silent: true,
+                  symbol: ['none', 'none'],
+                  label: {
+                      position: 'insideEndBottom'
+                  },
+                  lineStyle: {
+                    opacity: 1
+                  },
+                  data : [{
+                      xAxis : fud[datain.years.slice(-1)],
+                      label: {
+                          color: color[datain.years.slice(-1)],
+                          formatter: 'forecast'
+                      },
+                  }]
+                }
+            }])
+      }
+      var xRange = []
+      for (let i = 0; i <= 28; i += 2) {
+          xRange.push(i);
+      }
+
+        option = {
+              title: {
+                  text: 'Water temperature in Longueuil',
+                  left: 'center',
+                  textStyle: {fontSize: 28},
+              },
+              tooltip: {
+                  trigger: 'axis',
+                  axisPointer: {
+                      type: 'cross',
+                  },
+                  valueFormatter: value => `${value.toFixed(2)} °C`
+                  },
+              legend: {
+                  orient: 'vertical',
+                  right: 5,
+                  type: 'scroll',
+                  top: 'center',
+                  data: legend,
+                  selected: legendSelect
+          },
+          grid: {
+              left: '3%',
+              right: '10%',
+              bottom: '3%',
+              top: '15%',
+              containLabel: true,
+          },
+          toolbox: {
+              feature: {
+                  saveAsImage: {}
+              }
+          },
+          xAxis: {
+              type: 'category',
+              boundaryGap: true,
+              axisLine: {onZero: false},
+              axisLabel: {
+                  rotate: 45,
+                  interval: 8,
+              },
+              data: datain.date,
+          },
+          yAxis: {
+              type: 'value',
+              min: -0.3,
+              max: 28,
+              axisLabel: {
+                  formatter: '{value} °C',
+                  customValues: xRange
+              },
+              axisTick: {
+                  customValues: xRange
+              }
+          },
+          series: seriesData
+      };
+
+      myChart.setOption(option);
+
+          myChart.on('click', function(params) {
+              var sname = params.seriesName;
+              var xpos = params.dataIndex;
+              var date=datain.date[xpos];
+              if (xpos < 184) {
+                  var yyyy = sname.substring(0,4)
+              } else {
+                  var yyyy = sname.substring(5,9)
+              }
+              if (xpos < 366) {
+                            window.open(
+                              'https://worldview.earthdata.nasa.gov/?v=-74.2417,45.1855,-73.261,45.8297&t=' + encodeURIComponent(yyyy) + '-' + encodeURIComponent(date) + '-T15%3A10%3A15Z'
+                          )}
+           });
+
+    </script>
+  </body>
+</html>
