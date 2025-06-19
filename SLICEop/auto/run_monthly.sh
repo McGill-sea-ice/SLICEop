@@ -6,10 +6,10 @@ echo " "
 date
 
 # define path to SLICEop
-local_path=/aos/home/jrieck/src/SLICEop/SLICEop
+local_path=$(echo $sliceop_path)
 
 # load conda environment
-source /aos/home/jrieck/miniconda3/etc/profile.d/conda.sh
+source $(echo $sliceop_conda_path)
 conda activate sliceop
 
 # make sure 'forecastm' is False, indicating that the monthly forecast was not
@@ -58,10 +58,11 @@ fi
 
 # if monthly forecast was successful, plot the data
 forecastm=$(cat ${local_path}/auto/forecastm)
-if [[ ${forecastm} == True ]]; then
-    python ${local_path}/auto/monthly_plots.py
+if [[ ${TEST} != True ]]; then
+    if [[ ${forecastm} == True ]]; then
+        python ${local_path}/auto/monthly_plots.py
+    fi
 fi
-
 
 echo " "
 echo "-----------------------------------"

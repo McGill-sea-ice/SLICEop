@@ -5,10 +5,10 @@ echo " "
 date
 
 # define path to SLICEop
-local_path=/aos/home/jrieck/src/SLICEop/SLICEop
+local_path=$(echo $sliceop_path)
 
 # load conda environment
-source /aos/home/jrieck/miniconda3/etc/profile.d/conda.sh
+source $(echo $sliceop_conda_path)
 conda activate sliceop
 
 # make sure 'preproy' is False, indicating that the yearly preprocessing was not

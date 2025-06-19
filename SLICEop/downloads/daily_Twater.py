@@ -20,9 +20,8 @@ import csv
 import sys
 
 # path to SLICEop
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
-thermistor_path = "/storage/thermistor/"
-
+path = os.environ["sliceop_path"]
+thermistor_path = os.environ["sliceop_thermistor_path"]
 
 # function to read data from thermistor (works for files newer than
 # Longueuil.dat4860.dat, before that the format was different)

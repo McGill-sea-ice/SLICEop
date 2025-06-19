@@ -8,11 +8,18 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 now = datetime.datetime.now()
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = os.environ["sliceop_path"]
 
-year = str(now.year)
-month = f"{now.month:02d}"
-day = f"{now.day:02d}"
+# if running TEST, take year, month, day from environment variables
+# otherwise extract year, month, day from `datetime.datetime.now
+if os.environ["TEST"]=="True":
+    year = os.environ["YEAR"]
+    month = os.environ["MONTH"]
+    day = os.environ["DAY"]
+else:
+    year = f"{now.year:04d}"
+    month = f"{now.month:02d}"
+    day = f"{now.day:02d}"
 
 with open(path + "auto/frozen", "r") as f:
     frozen = f.read()

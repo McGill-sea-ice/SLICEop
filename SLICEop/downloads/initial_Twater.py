@@ -25,8 +25,9 @@ import csv
 
 # define path and verify that we are on crunch (the thermistor data from the
 # water treatment plant are tranferred to crunch and are only accessible there)
-requiredhost = "crunch"
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+requiredhost=$(echo $sliceop_twater_host)
+path = os.environ["sliceop_path"]
+thermistor_path = os.environ["sliceop_thermistor_path"]
 myhost = os.uname()[1]
 if requiredhost not in myhost:
     sys.exit("Not on " + requiredhost +
@@ -107,9 +108,9 @@ combined = xr.merge([longueuil_up2thermistor, thermistor_daily])
 # Longueuil.dat4835.dat to Longueuil.dat4844.dat do not have timestamps... so
 # we add 2024-12-17 based on the creation time of the files
 manu_range = np.arange(4836, 4860)
-stime = time.ctime(os.path.getmtime("/storage/thermistor/Longueuil.dat"
+stime = time.ctime(os.path.getmtime(thermistor_path + "Longueuil.dat"
                                     + str(manu_range[0]-1) + ".dat"))
-etime = time.ctime(os.path.getmtime("/storage/thermistor/Longueuil.dat"
+etime = time.ctime(os.path.getmtime(thermistor_path + "Longueuil.dat"
                                     + str(manu_range[-1]-1) + ".dat"))
 starttime = datetime.datetime.strptime(stime, "%a %b %d %H:%M:%S %Y")
 endtime = datetime.datetime.strptime(etime, "%a %b %d %H:%M:%S %Y")
@@ -129,13 +130,13 @@ def read_thermistor(path):
 # read in the thermistor data without time stamps and add those time stamps from
 # the `pandas.date_range` `tr` that we created
 t = 0
-da = read_thermistor("/storage/thermistor/Longueuil.dat"
+da = read_thermistor(thermistor_path + "Longueuil.dat"
                      + str(manu_range[0]) + ".dat")
 da["index"] = tr[t:t+len(da.index)]
 da = da.rename({"index": "Date"})
 t += len(da.Date)
 for i in range(manu_range[0]+1, manu_range[-1]+1):
-    tmp = read_thermistor("/storage/thermistor/Longueuil.dat" + str(i) + ".dat")
+    tmp = read_thermistor(thermistor_path + "Longueuil.dat" + str(i) + ".dat")
     tmp["index"] = tr[t:t+len(tmp.index)]
     tmp = tmp.rename({"index": "Date"})
     da = xr.concat((da, tmp), dim="Date")
