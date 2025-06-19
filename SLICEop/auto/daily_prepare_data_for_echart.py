@@ -17,13 +17,16 @@ import cmocean.cm as cmo
 
 # define path
 now = datetime.datetime.now()
-path = "/aos/home/jrieck/src/SLICEop/SLICEop/"
+path = os.environ["sliceop_path"]
 
 # get year and month from `datetime.now()`
 thisyear = now.year
 thismonth = now.month
 # first year to include in echart
 ymin = 1992
+
+# define which colormap to use in echart
+cmap = cmo.thermal
 
 # load preprocessed data
 tw = xr.open_dataset(
@@ -85,9 +88,9 @@ if thismonth < 6:
 else:
     tyear = thisyear
 # read the weekly and monthly forecast output
-weeklyForecast = pd.read_csv("temp_files/" + str(tyear)
+weeklyForecast = pd.read_csv(path + "auto/" + str(tyear)
                              + "FUDweekly").to_xarray()
-monthlyForecast = pd.read_csv("temp_files/" + str(tyear)
+monthlyForecast = pd.read_csv(path + "auto/" + str(tyear)
                               + "FUDmonthly").to_xarray()
 # get the dates of the latest weekly and monthly forecast
 latestWeekly = weeklyForecast.time[-1].values
@@ -210,10 +213,16 @@ for y in np.arange(ymin, tyear):
         fuds[str(y) + "/" + str(y+1)] = str(fud.FUD.values[y - ymin])[5:10]
     # add the colors from cmocean colormap to the color data
     colormap[str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
-        int(cmo.thermal(cpos[y-ymin])[i] * 255) for i in [0, 1, 2]
+        int(cmap(cpos[y-ymin])[i] * 255) for i in [0, 1, 2]
         ])
 # add climatological freeze-up date
-fuds["clim"] = '12-22'
+fudoys = np.array([
+    int(datetime.datetime.strptime("2001-" + fuds[i],
+        "%Y-%m-%d").strftime('%j')) for i in fuds.keys()
+    ])
+fudoys[fudoys<182] = fudoys[fudoys<182] + 365
+fuds["clim"] = str(datetime.datetime.strptime("2001 "
+    + str(int(np.mean(fudoys))), "%Y %j"))[5:10]
 
 # save data to json files
 with open(path + 'echart/sliceop_data.json', 'w') as fp:
