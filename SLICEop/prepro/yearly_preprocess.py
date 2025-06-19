@@ -18,7 +18,7 @@ path = os.environ["sliceop_path"]
 # if running TEST, take year, month from environment variables
 # otherwise extract year, month from `datetime.datetime.now
 if os.environ["TEST"]=="True":
-    year = f"{(int(os.environ["YEAR"]) - 1):04d}"
+    year = f"{os.environ["YEAR"]:04d}"
     month = os.environ["MONTH"]
 else:
     year = f"{(now.year - 1):04d}"

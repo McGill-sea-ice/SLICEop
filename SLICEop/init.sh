@@ -39,3 +39,15 @@ fi
 
 python ${local_path}/downloads/initial_download_ERA5.py
 python ${local_path}/downloads/initial_Twater.py
+
+# run the yearly preprocessing as if it were the last
+# June to get an initial file of monthly predictors
+export TEST=True
+m=$(date +%m)
+y=$(date +%Y)
+if [[ m -le 6 ]]; then
+    y=$((y-1))
+fi
+export YEAR=y
+export MONTH=06
+python ${local_path}/prepro/yearly_preprocess.py

@@ -15,9 +15,19 @@ now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
 out_dir = path + "downloads/ERA5/"
 
-# set first and last year of range to download
+end_year = now.year - 1
+month = now.month
+
+# the initial download is for previous completed seasons, so if we are in
+# the first half of the year, we download only data up until two years ago
+# because the current season (that started the year before) is not yet
+# completed
+if month < 7:
+    end_year = end_year - 1
+
+
+# set first year of range to download
 start_year = 1992
-end_year = 2023
 
 # define a function that downloads the required ERA5 data
 def download_era5(var, month, year, output_dir, lats, lons):
