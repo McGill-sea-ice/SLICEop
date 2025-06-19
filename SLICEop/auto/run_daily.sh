@@ -44,5 +44,9 @@ fi
 printf "\nDownloading latest MODIS image:\n"
 python ${local_path}/downloads/daily_MODIS.py
 
+# update data that is used in echart
+printf "\nPreparing data to be plotted in echart:\n"
+python ${local_path}/auto/daily_prepare_data_for_echart.py
+
 echo " "
 echo "-----------------------------------"
