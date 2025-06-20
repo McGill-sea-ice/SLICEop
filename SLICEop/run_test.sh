@@ -5,6 +5,7 @@ local_path=$(echo $sliceop_path)
 # SLICEop thinks it is not available for the testing
 
 mv ${local_path}/downloads/ERA5 ${sliceop_backup_path}/
+mkdir ${local_path}/downloads/ERA5
 
 export TEST=True
 d=1992-06-01
