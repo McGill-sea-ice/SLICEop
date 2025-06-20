@@ -25,6 +25,7 @@ if os.environ["TEST"]=="True":
     year = os.environ["YEAR"]
     month = os.environ["MONTH"]
     day = int(os.environ["DAY"])
+    max_day = day - 5
 else:
     year = f"{now.year:04d}"
     month = f"{now.month:02d}"
@@ -123,6 +124,8 @@ months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
 lons = np.array([-77.25, -73.25])
 
+# use different function when in testing environment and specify max_day, the day up until
+# which ERA5 would be available at datetime.now() if this were not a test
 if os.environ["TEST"]=="True":
     if month == "09":
         if max_day > 0:
