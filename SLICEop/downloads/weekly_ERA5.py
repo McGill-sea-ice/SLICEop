@@ -81,7 +81,7 @@ def download_era5(var, month, year, output_dir, lats, lons):
             os.remove(filename)
     return
 
-    def download_era5_test(var, month, year, max_day, output_dir, lats, lons):
+def download_era5_test(var, month, year, max_day, output_dir, lats, lons):
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".partial.grib"
     print("Downloading " + var + " for " + str(year) + month + " from ERA5")
     try:
