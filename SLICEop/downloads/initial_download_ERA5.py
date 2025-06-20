@@ -13,7 +13,7 @@ import numpy as np
 
 now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
-out_dir = path + "downloads/ERA5/"
+out_dir = path + "/downloads/ERA5/"
 
 end_year = now.year - 1
 month = now.month
