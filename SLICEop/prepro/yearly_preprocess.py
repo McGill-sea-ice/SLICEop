@@ -18,7 +18,7 @@ path = os.environ["sliceop_path"]
 # if running TEST, take year, month from environment variables
 # otherwise extract year, month from `datetime.datetime.now
 if os.environ["TEST"]=="True":
-    year = f"{os.environ["YEAR"]:04d}"
+    year = os.environ["YEAR"]
     month = os.environ["MONTH"]
 else:
     year = f"{(now.year - 1):04d}"
@@ -31,7 +31,7 @@ if month != "06":
 #### water temperature Tw
 ### remove periods of constant T (unless T is near the freezing point)
 # load daily average water temperature data
-Tw = xr.open_dataset(path + "downloads/Twater/Twater_Longueuil_updated.nc")
+Tw = xr.open_dataset(path + "/downloads/Twater/Twater_Longueuil_updated.nc")
 Tw_processed = Tw.T.copy()
 # compute dT / dt
 dTwdt = Tw["T"].ffill(dim="Date").differentiate("Date", datetime_unit="2D")
@@ -108,7 +108,7 @@ Tw["T_winter_offset"] = Tw_offset
 Tw["T_no_offset"] = Tw_no_offset
 print("saving T_water")
 Tw.sel(Date=slice(None, year + "-12-31")).to_netcdf(path
-    + "prepro/Twater_Longueuil_preprocessed.nc")
+    + "/prepro/Twater_Longueuil_preprocessed.nc")
 
 #### freeze-up date FUD
 # compute the freeze-up dates from the water temperature, the river is
@@ -142,7 +142,7 @@ for i in np.arange(0, y_max-y_min):
 FUD["FUDoy"] = ("time", doy)
 # save to `netcdf` file
 print("saving FUD")
-FUD.to_netcdf(path + "prepro/FUD_preprocessed.nc")
+FUD.to_netcdf(path + "/prepro/FUD_preprocessed.nc")
 
 #### ERA5 data - monthly predictors
 # define variable names, short names, months and which method to use to
@@ -157,7 +157,7 @@ monthly_predictors = xr.Dataset()
 for v in range(0, len(variables)):
     # load dataset
     try:
-        era5 = xr.open_mfdataset(path + "downloads/ERA5/ERA5_????" + months[v] + "_" + variables[v] + ".grib",
+        era5 = xr.open_mfdataset(path + "/downloads/ERA5/ERA5_????" + months[v] + "_" + variables[v] + ".grib",
                                  engine="cfgrib", decode_timedelta=True, backend_kwargs={"indexpath": ""})
     except:
         sys.exit("No ERA5 data found to load.")
@@ -206,8 +206,8 @@ end = min(FUD_end, ERA5_end)
 monthly_predictors = monthly_predictors.sel(time=slice(start, end + 1))
 monthly_predictors["FUDoy"] = FUD.FUDoy.sel(time=slice(start, end + 1))
 monthly_predictors.drop_vars(["number", "surface"]).to_netcdf(
-    path + "prepro/monthly_predictors.nc")
+    path + "/prepro/monthly_predictors.nc")
 # save information on whether the preprocessing was succesful or not
-with open(path + "prepro/preproy", "w") as f:
+with open(path + "/prepro/preproy", "w") as f:
     f.write(str("True"))
 f.close()
