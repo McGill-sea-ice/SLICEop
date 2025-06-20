@@ -44,11 +44,11 @@ start = np.datetime64(year + "-07-01")
 # load the time series of water temperature including the most recent and
 # extract the required date range
 tw = xr.open_dataset(
-    path + "downloads/Twater/Twater_Longueuil_updated.nc"
+    path + "/downloads/Twater/Twater_Longueuil_updated.nc"
     ).sel(Date=slice(start, yesterday))
 # load the preprocessed data and compute a climatological seasonal cycle
 tw_c = xr.open_dataset(
-    path + "prepro/Twater_Longueuil_preprocessed"
+    path + "/prepro/Twater_Longueuil_preprocessed"
     ).T_no_offset.groupby("Date.dayofyear").mean("Date").values
 # offest the climatology so that it runs from
 tw_c1 = tw_c[int(tw.Date[0].dt.dayofyear.values)::]
@@ -58,12 +58,12 @@ climtime = pd.date_range(start=datetime.datetime.strptime(year + " " + str(int(t
                          end=datetime.datetime.strptime(str(int(year) + 1) + " " + str(59), "%Y %j"),
                          freq="1D")
 
-with open(path + "auto/frozen", "r") as f:
+with open(path + "/auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
 if frozen == "True":
     frozen = True
-    with open(path + "auto/frozenDate", "r") as f:
+    with open(path + "/auto/frozenDate", "r") as f:
         frozenDate = f.read()
     f.close()
 else:
@@ -114,4 +114,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.set_title(title, fontweight="bold")
     plt.legend()
     plt.subplots_adjust(left=0.15, bottom=0.2, right=0.9)
-    plt.savefig(path + "auto/Twater_" + l[0:2] +" .png", dpi=300)
+    plt.savefig(path + "/auto/Twater_" + l[0:2] +" .png", dpi=300)

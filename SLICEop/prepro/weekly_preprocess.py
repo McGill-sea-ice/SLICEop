@@ -52,13 +52,13 @@ monthly_vars = xr.Dataset()
 
 for v in range(0, len(variables)):
     # define filenames to load
-    era5name = str(path + "downloads/ERA5/ERA5_" + year + months[v] + "_"
+    era5name = str(path + "/downloads/ERA5/ERA5_" + year + months[v] + "_"
                    + variables[v] +  ".grib")
-    era5partialname = str(path + "downloads/ERA5/ERA5_" + year + months[v]
+    era5partialname = str(path + "/downloads/ERA5/ERA5_" + year + months[v]
                           + "_" + variables[v] +  ".partial.grib")
     mslice = slice(year + "-" + months[v] + "-01", None)
     if int(months[v]) < int(month):
-        seas51name = str(path + "downloads/SEAS51/SEAS51_" + year + months[v]
+        seas51name = str(path + "/downloads/SEAS51/SEAS51_" + year + months[v]
                          + "_" + variables[v] + ".grib")
     else:
         if day < 7:
@@ -66,10 +66,10 @@ for v in range(0, len(variables)):
                 mm1 = "12"
             else:
                 mm1 = f"{(int(month) - 1):02d}"
-            seas51name = str(path + "downloads/SEAS51/SEAS51_" + year + mm1
+            seas51name = str(path + "/downloads/SEAS51/SEAS51_" + year + mm1
                              + "_" + variables[v] + ".grib")
         else:
-            seas51name = str(path + "downloads/SEAS51/SEAS51_" + year + month
+            seas51name = str(path + "/downloads/SEAS51/SEAS51_" + year + month
                              + "_" + variables[v] + ".grib")
     # if the full month is available from ERA5, always use that
     if os.path.isfile(era5name):
@@ -248,9 +248,9 @@ for v in range(0, len(variables)):
         sys.exit(variables[v] + " not found")
 
 # save data to disk
-monthly_vars.to_netcdf(path + "prepro/input_forecast_weekly.nc")
+monthly_vars.to_netcdf(path + "/prepro/input_forecast_weekly.nc")
 
 # save information on whether the preprocessing was succesful or not
-with open(path + "prepro/preprow", "w") as f:
+with open(path + "/prepro/preprow", "w") as f:
     f.write(str("True"))
 f.close()

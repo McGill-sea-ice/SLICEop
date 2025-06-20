@@ -21,13 +21,13 @@ else:
     month = f"{now.month:02d}"
     day = f"{now.day:02d}"
 
-with open(path + "auto/frozen", "r") as f:
+with open(path + "/auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
 
 if frozen == "True":
     frozen = True
-    with open(path + "auto/frozenDate", "r") as f:
+    with open(path + "/auto/frozenDate", "r") as f:
         frozenDate = f.read()
     f.close()
 else:
@@ -36,8 +36,8 @@ else:
 if int(month) < 7:
     year = f"{(int(year) - 1):04d}"
 
-weekly_path = path + "auto/" + year + "FUDweekly"
-monthly_path = path + "auto/" + year + "FUDmonthly"
+weekly_path = path + "/auto/" + year + "FUDweekly"
+monthly_path = path + "/auto/" + year + "FUDmonthly"
 
 if os.path.isfile(weekly_path):
     FUDweekly = pd.read_csv(weekly_path, index_col=[0, 1]).to_xarray()
@@ -127,4 +127,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.text(0.02, 0.98, year, transform = ax1.transAxes, fontsize=18, ha="left", va="top")
     ax1.set_title(title, fontweight="bold")
     plt.subplots_adjust(left=0.2, bottom=0.2, right=0.95)
-    plt.savefig(path + "auto/forecast_" + l[0:2] + ".jpg", dpi=300)
+    plt.savefig(path + "/auto/forecast_" + l[0:2] + ".jpg", dpi=300)

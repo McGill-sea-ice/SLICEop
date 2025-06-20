@@ -30,7 +30,7 @@ cmap = cmo.thermal
 
 # load preprocessed data
 tw = xr.open_dataset(
-    path + "prepro/Twater_Longueuil_preprocessed.nc"
+    path + "/prepro/Twater_Longueuil_preprocessed.nc"
     )
 # compute climatological seasonal cycle
 tw_c = tw.T_no_offset.sel(
@@ -49,9 +49,9 @@ tw_cmax = tw.T_no_offset.sel(
     Date=slice(None, str(thisyear-1) + "-06-30")
     ).groupby("Date.dayofyear").max("Date").values[0:-1]
 # load most recent data (lower level of preprocessing)
-tw_up = xr.open_dataset("temp_files/Twater_Longueuil_updated.nc")
+tw_up = xr.open_dataset(path + "/downloads/Twater/Twater_Longueuil_updated.nc")
 # load the observed freeze-up dates for all years
-fud = xr.open_dataset("FUD_preprocessed.nc")
+fud = xr.open_dataset(path + "/prepro/FUD_preprocessed.nc")
 # shift all variables so that the axis is from July 1 to June 30
 tw_c1 = tw_c[182::]
 tw_c2 = tw_c[0:182]
@@ -67,12 +67,12 @@ tw_cmax2 = tw_cmax[0:182]
 tw_climmax = np.hstack([tw_cmax1, tw_cmax2])
 
 # load 'frozen' to see if river is frozen or not and convert to python bool
-with open(path + "auto/frozen", "r") as f:
+with open(path + "/auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
 if "True" in frozen:
     frozen = True
-    with open(path + "auto/frozenDate", "r") as f:
+    with open(path + "/auto/frozenDate", "r") as f:
         frozenDate = f.read()
     f.close()
 else:
@@ -88,9 +88,9 @@ if thismonth < 6:
 else:
     tyear = thisyear
 # read the weekly and monthly forecast output
-weeklyForecast = pd.read_csv(path + "auto/" + str(tyear)
+weeklyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                              + "FUDweekly").to_xarray()
-monthlyForecast = pd.read_csv(path + "auto/" + str(tyear)
+monthlyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                               + "FUDmonthly").to_xarray()
 # get the dates of the latest weekly and monthly forecast
 latestWeekly = weeklyForecast.time[-1].values
@@ -225,21 +225,21 @@ fuds["clim"] = str(datetime.datetime.strptime("2001 "
     + str(int(np.mean(fudoys))), "%Y %j"))[5:10]
 
 # save data to json files
-with open(path + 'echart/sliceop_data.json', 'w') as fp:
+with open(path + '/echart/sliceop_data.json', 'w') as fp:
     json.dump(sliceop_data, fp)
 
-with open(path + 'echart/colormap.json', 'w') as fp:
+with open(path + '/echart/colormap.json', 'w') as fp:
     json.dump(colormap, fp)
 
-with open(path + 'echart/fuds.json', 'w') as fp:
+with open(path + '/echart/fuds.json', 'w') as fp:
     json.dump(fuds, fp)
 
-with open(path + 'echart/latest.json', 'w') as fp:
+with open(path + '/echart/latest.json', 'w') as fp:
     json.dump(latest, fp)
 
 if frozen:
-    with open(path + 'echart/frozen.js', 'w') as fp:
+    with open(path + '/echart/frozen.js', 'w') as fp:
         fp.write("frozen=true")
 else:
-    with open(path + 'echart/frozen.js', 'w') as fp:
+    with open(path + '/echart/frozen.js', 'w') as fp:
         fp.write("frozen=false")

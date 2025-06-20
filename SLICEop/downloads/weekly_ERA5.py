@@ -17,7 +17,7 @@ import numpy as np
 # define paths
 now = datetime.datetime.now()
 path = os.environ["sliceop_path"]
-out_dir = path + "downloads/"
+out_dir = path + "/downloads/"
 
 # if running TEST, take year, month, day from environment variables
 # otherwise extract year, month, day from `datetime.datetime.now
@@ -195,7 +195,7 @@ if os.environ["TEST"]=="True":
             except:
                 pass
     else:
-        with open(local_path + "auto/frozen", "r") as f:
+        with open(local_path + "/auto/frozen", "r") as f:
             frozen = f.read()
         f.close()
         if frozen == "True":
@@ -204,7 +204,7 @@ if os.environ["TEST"]=="True":
             frozen = False
         if frozen:
             frozen = False
-            with open(local_path + "test/auto/frozen", "w") as f:
+            with open(local_path + "/auto/frozen", "w") as f:
                 f.write(str(frozen))
             f.close()
         print("No additional data found to improve the forecast ")
@@ -228,7 +228,7 @@ else:
        	        print("ERA5 " + variables[2] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                           + year + months[2] + "_" + variables[2] +  ".partial.grib")
             except:
                 pass
@@ -252,7 +252,7 @@ else:
                 print("ERA5 " + variables[1] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                         + year + months[1] + "_" + variables[1] +  ".partial.grib")
             except:
                 pass
@@ -272,14 +272,14 @@ else:
                 print("ERA5 " + variables[0] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                         + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
     else:
         # if in May or June, make sure to reset the variable `frozen` to `False`
         # in preparation for the next winter's forecast
-        with open(path + "auto/frozen", "r") as f:
+        with open(path + "/auto/frozen", "r") as f:
             frozen = f.read()
         f.close()
         if frozen == "True":
@@ -288,12 +288,12 @@ else:
             frozen = False
         if frozen:
             frozen = False
-        with open(path + "auto/frozen", "w") as f:
+        with open(path + "/auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
         print("No additional data found to improve the forecast ")
 
 # save info on whether data was updated
-with open(path + "downloads/updatew", "w") as f:
+with open(path + "/downloads/updatew", "w") as f:
     f.write(str("True"))
 f.close()

@@ -45,14 +45,14 @@ variables = ["2m_temperature", "snowfall", "total_cloud_cover"]
 model = LinearRegression()
 
 # load input data
-input_forecast = xr.open_dataset(path + "prepro/input_forecast.nc")
+input_forecast = xr.open_dataset(path + "/prepro/input_forecast.nc")
 # for the ensemble mean forecast, only keep variables with "_m" at the end of
 # the name
 input_forecast_m = input_forecast.drop_vars(
     [v for v in variables if v in input_forecast.variables]
     )
 # load the monthly predictors (created in 'yearly_preprocess.py')
-predictors = xr.open_dataset(path + "prepro/monthly_predictors.nc")
+predictors = xr.open_dataset(path + "/prepro/monthly_predictors.nc")
 
 # convert predictors do dataframe in preparation for the forecast
 predictor_frame = predictors[[v for v in variables]].to_dataframe()
