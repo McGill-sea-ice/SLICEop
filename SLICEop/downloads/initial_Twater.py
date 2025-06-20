@@ -25,7 +25,7 @@ import csv
 
 # define path and verify that we are on crunch (the thermistor data from the
 # water treatment plant are tranferred to crunch and are only accessible there)
-requiredhost=$(echo $sliceop_twater_host)
+requiredhost=os.environ["sliceop_twater_host"]
 path = os.environ["sliceop_path"]
 thermistor_path = os.environ["sliceop_thermistor_path"]
 myhost = os.uname()[1]
