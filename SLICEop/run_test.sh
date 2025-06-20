@@ -1,6 +1,11 @@
 #!/bin/bash
 local_path=$(echo $sliceop_path)
 
+# need to temporarily move the ERA5 data elsewhere so that
+# SLICEop thinks it is not available for the testing
+
+mv ${local_path}/downloads/ERA5 ${sliceop_backup_path}/
+
 export TEST=True
 d=1992-06-01
 while [ "$d" != 1993-03-31 ]; do
@@ -23,4 +28,7 @@ while [ "$d" != 1993-03-31 ]; do
     fi
     d=$(date -I -d "$d + 1 day")
 done
+
+mv ${sliceop_backup_path}/ERA5 ${local_path}/downloads/
+
 export TEST=False
