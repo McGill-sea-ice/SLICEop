@@ -12,7 +12,7 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 out_dir = path + "/downloads/ERA5/"
 
 end_year = now.year - 1

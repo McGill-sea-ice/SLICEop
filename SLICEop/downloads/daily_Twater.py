@@ -20,8 +20,8 @@ import csv
 import sys
 
 # path to SLICEop
-path = os.environ["sliceop_path"]
-thermistor_path = os.environ["sliceop_thermistor_path"]
+path = os.environ["SLICEOP_PATH"]
+thermistor_path = os.environ["SLICEOP_THERMISTOR_PATH"]
 
 # function to read data from thermistor (works for files newer than
 # Longueuil.dat4860.dat, before that the format was different)

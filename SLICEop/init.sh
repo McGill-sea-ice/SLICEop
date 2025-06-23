@@ -1,7 +1,15 @@
 #!/bin/bash
-local_path=$(echo $sliceop_path)
 
-source $(echo $sliceop_conda_path)
+if [[ -z "${SLICEOP_PATH}" ]]; then
+  local_path=$(echo $SLICEOP_PATH)
+else
+  echo "execute SLICEOP/setup.sh before running init.sh"
+  exit 1
+fi
+
+local_path=$(echo $SLICEOP_PATH)
+
+source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
 if [ ! -e ${local_path}/downloads/updatew ]; then

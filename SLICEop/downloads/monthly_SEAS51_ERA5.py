@@ -13,7 +13,7 @@ import numpy as np
 
 # define paths
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 out_dir = path + "/downloads/"
 
 # if running TEST, take year, month, day from environment variables

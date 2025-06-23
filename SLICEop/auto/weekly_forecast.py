@@ -18,7 +18,7 @@ from sklearn.linear_model import LinearRegression
 
 # define path
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 
 # if running TEST, take year, month, day from environment variables
 # otherwise extract year, month, day from `datetime.datetime.now

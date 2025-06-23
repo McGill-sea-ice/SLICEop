@@ -14,7 +14,7 @@ import xarray as xr
 
 # define path
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 
 # if running TEST, take year, month from environment variables
 # otherwise extract year, month from `datetime.datetime.now

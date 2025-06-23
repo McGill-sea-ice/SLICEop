@@ -16,7 +16,7 @@ import numpy as np
 
 # define paths
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 out_dir = path + "/downloads/"
 
 # if running TEST, take year, month, day from environment variables
@@ -130,7 +130,7 @@ if os.environ["TEST"]=="True":
     if month == "09":
         if max_day > 0:
             try:
-                download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[2] + " not downloaded")
     elif month == "10":
@@ -140,7 +140,7 @@ if os.environ["TEST"]=="True":
             else:
                 max_day = 30 + max_day
             try:
-                download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[2] + " not downloaded")
         else:
@@ -152,7 +152,7 @@ if os.environ["TEST"]=="True":
     elif month == "11":
         if max_day > 0:
             try:
-                download_era5(variables[1], months[1], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[1], months[1], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[1] + " not downloaded")
     elif month == "12":
@@ -160,14 +160,14 @@ if os.environ["TEST"]=="True":
             if max_day > 0:
                 max_day1 = 30
                 try:
-                    download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
-                    download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
                 except:
                     print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
             else:
                 max_day1 = 30 + max_day
                 try:
-                    download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
                 except:
                     print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
         else:
@@ -177,7 +177,7 @@ if os.environ["TEST"]=="True":
             except:
                 pass
             try:
-                download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[0] + " not downloaded")
     elif month == "01":
@@ -188,7 +188,7 @@ if os.environ["TEST"]=="True":
             else:
                 max_day = 31 + max_day
             try:
-                download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[0] + " not downloaded")
         else:

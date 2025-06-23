@@ -5,11 +5,20 @@ echo "---------- run_monthly.sh -----------"
 echo " "
 date
 
-# define path to SLICEop
-local_path=$(echo $sliceop_path)
+# check if the required environment variables are set, if not run setup.sh
+if [[ -z "${SLICEOP_PATH}" ]]; then
+  local_path=$(echo $SLICEOP_PATH)
+else
+  if [ $# -eq 0 ]; then
+    echo "run_monthly.sh requires SLICEOP root directory as input argument"
+    exit 1
+  else
+    source $1/setup.sh
+    local_path=$(echo $SLICEOP_PATH)
+fi
 
 # load conda environment
-source $(echo $sliceop_conda_path)
+source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
 # make sure 'forecastm' is False, indicating that the monthly forecast was not

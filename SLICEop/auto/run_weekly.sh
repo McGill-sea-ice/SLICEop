@@ -5,11 +5,20 @@ echo "---------- run_weekly.sh -----------"
 echo " "
 date
 
-# define path to SLICEop
-local_path=$(echo $sliceop_path)
+# check if the required environment variables are set, if not run setup.sh
+if [[ -z "${SLICEOP_PATH}" ]]; then
+  local_path=$(echo $SLICEOP_PATH)
+else
+  if [ $# -eq 0 ]; then
+    echo "run_weekly.sh requires SLICEOP root directory as input argument"
+    exit 1
+  else
+    source $1/setup.sh
+    local_path=$(echo $SLICEOP_PATH)
+fi 
 
 # load conda environment
-source $(echo $sliceop_conda_path)
+source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
 # make sure 'updatew', 'preprow', and 'forecastw' are all False, indicating
@@ -58,7 +67,7 @@ fi
 
 # if weekly forecast was successful, plot the data
 forecastw=$(cat ${local_path}/auto/forecastw)
-if [[ ${TEST} != True]]; then
+if [[ ${TEST} != True ]]; then
     if [[ ${forecastm} == True ]]; then
         python ${local_path}/auto/weekly_plots.py
     fi
