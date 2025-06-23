@@ -7,14 +7,14 @@ date
 
 # check if the required environment variables are set, if not run setup.sh
 if [[ -z "${SLICEOP_PATH}" ]]; then
-  local_path=$(echo $SLICEOP_PATH)
-else
   if [ $# -eq 0 ]; then
     echo "run_monthly.sh requires SLICEOP root directory as input argument"
     exit 1
   else
     source $1/setup.sh
     local_path=$(echo $SLICEOP_PATH)
+else
+  local_path=$(echo $SLICEOP_PATH)
 fi
 
 # load conda environment

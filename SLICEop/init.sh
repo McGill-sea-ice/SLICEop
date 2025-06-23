@@ -1,10 +1,10 @@
 #!/bin/bash
 
 if [[ -z "${SLICEOP_PATH}" ]]; then
-  local_path=$(echo $SLICEOP_PATH)
-else
   echo "execute SLICEOP/setup.sh before running init.sh"
   exit 1
+else
+  local_path=$(echo $SLICEOP_PATH)
 fi
 
 local_path=$(echo $SLICEOP_PATH)

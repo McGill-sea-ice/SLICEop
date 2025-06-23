@@ -1,20 +1,20 @@
 #!/bin/bash
 if [[ -z "${SLICEOP_PATH}" ]]; then
-  local_path=$(echo $SLICEOP_PATH)
-else
   echo "execute SLICEOP/setup.sh before run_test.sh"
   exit 1
+else
+  local_path=$(echo $SLICEOP_PATH)
 fi
 
 # need to temporarily move the ERA5 data elsewhere so that
 # SLICEop thinks it is not available for the testing
 
-#mv ${local_path}/downloads/ERA5 ${sliceop_backup_path}/
-#mkdir ${local_path}/downloads/ERA5
+mv ${local_path}/downloads/ERA5 ${SLICEOP_BACKUP_PATH}/
+mkdir ${local_path}/downloads/ERA5
 
 export TEST=True
-d=1992-09-01
-while [ "$d" != 1993-03-31 ]; do
+d=1992-06-01
+while [ "$d" != 2025-03-31 ]; do
     year=$(date -d "$d" +%Y)
     month=$(date -d "$d" +%m)
     dom=$(date -d "$d" +%d)
@@ -35,7 +35,7 @@ while [ "$d" != 1993-03-31 ]; do
     d=$(date -I -d "$d + 1 day")
 done
 
-#rm -r ${local_path}/downloads/ERA5
-#mv ${sliceop_backup_path}/ERA5 ${local_path}/downloads/
+rm -r ${local_path}/downloads/ERA5
+mv ${SLICEOP_BACKUP_PATH}/ERA5 ${local_path}/downloads/
 
 export TEST=False
