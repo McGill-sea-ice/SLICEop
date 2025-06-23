@@ -13,6 +13,7 @@ if [[ -z "${SLICEOP_PATH}" ]]; then
   else
     source $1/setup.sh
     local_path=$(echo $SLICEOP_PATH)
+  fi
 else
   local_path=$(echo $SLICEOP_PATH)
 fi
