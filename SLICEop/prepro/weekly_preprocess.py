@@ -206,7 +206,7 @@ for v in range(0, len(variables)):
                 # 'i2' to add the sum of i1:i2
                 if method[v] == "sum":
                     old_sum_at_i2 = seas51[short_vars[v]][:, i2].copy().values
-                    seas51[short_vars[v]][:, i1:i2+1] = np.arrray(
+                    seas51[short_vars[v]][:, i1:i2+1] = np.array(
                         seas51[short_vars[v]][:, i1-1].values
                         + era5p[short_vars[v]].cumsum("time")[i1p::].values
                         )
