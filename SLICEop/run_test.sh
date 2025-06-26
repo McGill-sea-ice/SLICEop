@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ -z "${SLICEOP_PATH}" ]]; then
-  echo "execute SLICEOP/setup.sh before run_test.sh"
+  echo "source SLICEOP/setup.sh before run_test.sh"
   exit 1
 else
   local_path=$(echo $SLICEOP_PATH)
