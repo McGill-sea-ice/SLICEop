@@ -22,6 +22,7 @@ import os
 import time
 import datetime
 import csv
+import sys
 
 # define path and verify that we are on crunch (the thermistor data from the
 # water treatment plant are tranferred to crunch and are only accessible there)
