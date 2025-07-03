@@ -31,6 +31,7 @@ else:
     month = f"{now.month:02d}"
     day = f"{now.day:02d}"
 
+oy = year
 # the "year" of the forecast remains the same even if we switch into the next
 # year's Jan., Feb., Mar., Apr.
 if month in ["01", "02", "03", "04"]:
@@ -98,13 +99,13 @@ else:
 # if output file for the current year is already present, append
 if os.path.isfile(path + "/auto/" + year + "FUDmonthly"):
     with open(path + "/auto/" + year + "FUDmonthly", "a") as f:
-        f.write("\n" + year + "-" + month + "-" + day + ",0,"
+        f.write("\n" + oy + "-" + month + "-" + day + ",0,"
                 + str(int(np.around(forecast_m[0]))))
     f.close()
 # if output file is not present, create it and add header line
 else:
     with open(path + "/auto/" + year + "FUDmonthly", "a") as f:
-        f.write("time,number,FUD\n" + year + "-" + month + "-" + day + ",0,"
+        f.write("time,number,FUD\n" + oy + "-" + month + "-" + day + ",0,"
                 + str(int(np.around(forecast_m[0]))))
     f.close()
 
@@ -158,7 +159,7 @@ if "number" in input_forecast.dims:
         # if output file for the current year is already present, append
         if os.path.isfile(path + "/auto/" + year + "FUDmonthly"):
             with open(path + "/auto/" + year + "FUDmonthly", "a") as f:
-                f.write("\n" + year + "-" + month + "-" + day + "," + str(n+1)
+                f.write("\n" + oy + "-" + month + "-" + day + "," + str(n+1)
                         + "," + str(int(np.around(forecast[0]))))
             f.close()
         # do not write the ensemble members if the ensemble mean didn't work

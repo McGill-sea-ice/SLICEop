@@ -21,6 +21,7 @@ else:
     month = f"{now.month:02d}"
     day = f"{now.day:02d}"
 
+# if river is already frozen, get the date of freeze-up
 with open(path + "/auto/frozen", "r") as f:
     frozen = f.read()
 f.close()
@@ -28,23 +29,30 @@ f.close()
 if frozen == 'True':
     frozen = True
     with open(path + "/auto/frozenDate", "r") as f:
-        frozenDOY = int(f.read())
+        frozenDate = f.read()
     f.close()
+    frozenDOY = int(datetime.datetime.strptime(frozenDate,
+                                               "%Y-%m-%d").strftime('%j'))
 else:
     frozen = False
 
+# the "year" of the forecast remains the same even if we switch into the next
+# year
 if int(month) < 7:
     year = f"{(int(year) - 1):04d}"
 
+# define paths of forecasts
 weekly_path = path + "/auto/" + year + "FUDweekly"
 monthly_path = path + "/auto/" + year + "FUDmonthly"
 
+# load forecasted freeze-up dates depending on which files are available
 if os.path.isfile(weekly_path):
     FUDweekly = pd.read_csv(weekly_path, index_col=[0, 1]).to_xarray()
     FUDweekly["time"] = pd.DatetimeIndex(FUDweekly["time"].values)
 if os.path.isfile(monthly_path):
     FUDmonthly = pd.read_csv(monthly_path, index_col=[0, 1]).to_xarray()
     FUDmonthly["time"] = pd.DatetimeIndex(FUDmonthly["time"].values)
+# if both monthly and weekly forecasts are available, combine the data
 if (os.path.isfile(monthly_path) & os.path.isfile(weekly_path)):
     FUDall = xr.concat([FUDweekly, FUDmonthly], dim="time").sortby("time")
 elif (os.path.isfile(monthly_path) & (not os.path.isfile(weekly_path))):
@@ -52,7 +60,11 @@ elif (os.path.isfile(monthly_path) & (not os.path.isfile(weekly_path))):
 else:
     sys.exit("No data found to plot.")
 
-frozenCLIM = 356
+# load observed freeze-up date to compute climatological date
+FUD = xr.open_dataset(path + "/prepro/FUD_preprocessed.nc")
+frozenCLIM = int(np.around(FUD.FUDoy.mean().values))
+
+# define the y-axis (limits, ticks, labels) of the plot
 yax_min = 343
 yax_max = 396
 ytick_spacing = np.max(np.diff(np.linspace(yax_min+1, yax_max-2, 10, dtype=int)))
@@ -67,6 +79,7 @@ for i in range(0, len(yticks)):
         ytickyear = "2001"
     yticklabels[i] = datetime.datetime.strptime(ytickyear + ' ' + str(ytickday), '%Y %j').strftime('%b-%d')
 
+# define the x-axis (limits, ticks, labels) of the plot
 xax_min = np.datetime64(year + "-07-01")
 xax_max = np.datetime64(str(int(year) + 1) + "-01-31")
 xticks = np.unique(pd.date_range(start=xax_min, freq="MS", periods=8).round("1D"))
@@ -77,12 +90,15 @@ else:
 xtickmonths = [xticks[i].astype("datetime64[M]").astype(int) % 12 + 1 for i in range(0, len(xticks))]
 xtickdays = [(xticks[i].astype('datetime64[D]') - xticks[i].astype('datetime64[M]') + 1).astype(int) for i in range(0, len(xticks))]
 
+# loop over either french or english
 for l in ["fr_CA", "en_CA"]:
     try:
         locale.setlocale(locale.LC_TIME, l)
     except:
         pass
+    # set xticklabels after locale has been set
     xticklabels = [datetime.datetime.strptime("2000 " + f"{xtickmonths[i]:02d}" + " " + f"{xtickdays[i]:02d}", '%Y %m %d').strftime('%d %b') + "      " for i in range(0, len(xticks))]
+    # define labels depending on language
     if l == 'fr_CA':
         frozenlabel = "date de gel observée"
         l1label = "prévision"
@@ -99,8 +115,10 @@ for l in ["fr_CA", "en_CA"]:
         xlabel = "forecast issued"
         ylabel = "forecasted freeze-up date"
         title = "Freeze-up date forecast"
+    # setup figure
     fig = plt.figure(figsize=(5, 4))
     ax1 = fig.add_subplot()
+    # if river is frozen, add the freeze-up date as vertical line
     if (frozen & (xticks_diff != None)):
         print("plotting obs fud")
         frozenXpos = np.datetime64(year + "-01-01") + np.timedelta64(int(frozenDOY), 'D')
@@ -108,15 +126,19 @@ for l in ["fr_CA", "en_CA"]:
         ax1.vlines(frozenXpos, yax_min, yax_max, ls="--", color="firebrick")
         ax1.text(frozenXpos + (xticks_diff/10), (yax_min + yax_max)/2, frozenlabel,
                  ha="left", va="center", rotation=90, color="firebrick", fontsize=9)
+    # plot the individual forecast members
     for n in range(1, len(FUDall.number)):
         ax1.plot(FUDall.time, FUDall.FUD.sel(number=n), color="grey", alpha=0.5, lw=0, marker="4", ms=8, mew=1)
     for n in range(1, len(FUDmonthly.number)):
         ax1.plot(FUDmonthly.time, FUDmonthly.FUD.sel(number=n), color="dimgray", alpha=0.5, marker="4", lw=0, ms=8, mew=1)
+    # plot the ensemble mean forecast
     ax1.plot(FUDall.time, FUDall.FUD.sel(number=0), color="indigo", label=l1label, lw=3)
     ax1.plot(FUDmonthly.time, FUDmonthly.FUD.sel(number=0), color="darkorange", marker="x", lw=0, ms=8, mew=3, label=l2label)
+    # plot the climatological freeze-up date as a horizontal line
     ax1.hlines(frozenCLIM, xax_min, xax_max, ls="--", color="dimgray")
-    ax1.text(np.datetime64(str(int(year) + 1) + "-02-08"), frozenDOY-1, climlabel,
+    ax1.text(np.datetime64(str(int(year) + 1) + "-02-08"), frozenCLIM-1, climlabel,
              ha="right", va="top", rotation=0, color="dimgray", fontsize=6)
+    # set labels, limits, ticks, etc.
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(ylabel)
     ax1.set_ylim(yax_min, yax_max)
@@ -129,4 +151,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.text(0.02, 0.98, year, transform = ax1.transAxes, fontsize=18, ha="left", va="top")
     ax1.set_title(title, fontweight="bold")
     plt.subplots_adjust(left=0.2, bottom=0.2, right=0.95)
-    plt.savefig(path + "/auto/forecast" + l[0:2] + ".jpg", dpi=300)
+    plt.savefig(path + "/auto/forecast" + l[0:2] + ".png", dpi=300)
