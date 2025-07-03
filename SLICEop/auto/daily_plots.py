@@ -61,6 +61,45 @@ if fud_clim > 365:
     climfrozenDate = str(datetime.datetime.strptime("2002 " + str(int(fud_clim)), "%Y %j"))
 else:
     climfrozenDate = str(datetime.datetime.strptime("2001 " + str(int(fud_clim)), "%Y %j"))
+# read the weekly and monthly forecast output
+if ((int(month)==7) & (int(day)<8)):
+    weeklyForecast = pd.read_csv(path + "/auto/" + str(int(year)-1)
+                                 + "FUDweekly").to_xarray()
+    monthlyForecast = pd.read_csv(path + "/auto/" + str(int(year)-1)
+                                  + "FUDmonthly").to_xarray()
+else:
+    weeklyForecast = pd.read_csv(path + "/auto/" + str(year)
+                                 + "FUDweekly").to_xarray()
+    monthlyForecast = pd.read_csv(path + "/auto/" + str(year)
+                                  + "FUDmonthly").to_xarray()
+# get the dates of the latest weekly and monthly forecast
+latestWeekly = weeklyForecast.time[-1].values
+latestMonthly = weeklyForecast.time[-1].values
+# the last weekly forecast was made after the last monthly forecast, the
+# weekly forecast is the used
+if (np.datetime64(str(latestWeekly)) >= np.datetime64(str(latestMonthly))):
+    latestFUD = weeklyForecast.where(
+        ((weeklyForecast.time==latestWeekly)
+         & (weeklyForecast.number==0))
+        ).mean().FUD.values
+# if last monthly forecast was made after the last weekly forecast, the
+# monthly forecast is the used
+else:
+    latestFUD = monthlyForecast.where(
+        ((monthlyForecast.time==latestMonthly)
+         & (monthlyForecast.number==0))
+         ).mean().FUD.values
+# convert the latest forecasted dayofyear to a date
+if latestFUD < 182:
+    latestForecast = str(
+        datetime.datetime.strptime(str(year + 1) + " " + str(int(latestFUD)),
+                                   "%Y %j")
+        )[0:10]
+else:
+    latestForecast = str(
+        datetime.datetime.strptime(str(year) + " " + str(int(latestFUD)),
+                                   "%Y %j")
+        )[0:10]
 # remove mean offset from current season's data
 tw = (twu.T - twp.T_winter_offset.mean().values)
 # compute climatological cycle
@@ -144,12 +183,14 @@ for l in ["fr_CA", "en_CA"]:
         climlabel = "climatologie"
         waterlabel = "observations"
         frozenlabel = "date de gel observée"
+        forecastlabel = "date de gel prévu"
         climfrozenlabel = "date de gel moyen"
         title = "température de l'eau à Longueuil"
     elif l == 'en_CA':
         climlabel = "climatology"
         waterlabel = "observations"
         frozenlabel = "observed freeze-up"
+        forecastlabel = "forecasted freeze-up"
         climfrozenlabel = "climatological freeze-up"
         title = "Water temperature at Longueuil"
     # setup figure
@@ -167,6 +208,14 @@ for l in ["fr_CA", "en_CA"]:
         ax1.vlines(np.datetime64(frozenDate), yax_min, yax_max, ls="--", color="firebrick")
         ax1.text(np.datetime64(frozenDate) + (xticks_diff/10), (yax_min + yax_max)/2, frozenlabel,
                  ha="left", va="center", rotation=90, color="firebrick", fontsize=9)
+    # if not frozen, plot the forecasted freeze-up if available
+    else:
+        if ((int(month)==7) & (int(day)<8)):
+            pass
+        else:
+            ax1.vlines(np.datetime64(latestForecast), -1, tw.T.max()+1, ls="--", color="darkorange")
+            ax1.text(np.datetime64(latestForecast) + (xticks_diff/10), (yax_min + yax_max)/2, forecastlabel,
+                     ha="left", va="center", rotation=90, color="darkorange", fontsize=9)
     ax1.set_xticks(xticks)
     ax1.set_xticklabels(xticklabels, rotation=45);
     ax1.tick_params(axis='x', which='major', pad=-10)
