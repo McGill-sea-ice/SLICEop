@@ -63,8 +63,11 @@ tds = float((yesterday - firstday).values) / 1e9
 i = lowest_i
 if tds > 0:
     # read new temperature data from thermistor
-    da_update = read_thermistor_new(thermistor_path + "/Longueuil.dat"
-                                    + str(i) + ".dat")
+    try:
+        da_update = read_thermistor_new(thermistor_path + "/Longueuil.dat"
+                                        + str(i) + ".dat")
+    except:
+        sys.exit("No additional temperature data found.")
     i += 1
     # add new data until the most recent file
     while os.path.isfile(thermistor_path + "/Longueuil.dat" + str(i) + ".dat"):
@@ -90,7 +93,7 @@ if tds > 0:
     f.close()
 else:
     print("No full day of temperature data available since "
-          + str(firstday.values))
+          + str(ds_in.Date.isel(Date=-1).values))
     sys.exit("Exiting daily_Twater.py")
 
 # drop duplicate values on time axis

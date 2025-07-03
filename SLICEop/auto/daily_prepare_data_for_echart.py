@@ -17,11 +17,12 @@ import cmocean.cm as cmo
 
 # define path
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 
 # get year and month from `datetime.now()`
 thisyear = now.year
 thismonth = now.month
+today = now.day
 # first year to include in echart
 ymin = 1992
 
@@ -86,7 +87,13 @@ latest = {}
 if thismonth < 6:
     tyear = thisyear - 1
 else:
-    tyear = thisyear
+    if thismonth == 7:
+        if today < 8:
+            tyear = thisyear - 1
+        else:
+            tyear = thisyear
+    else:
+        tyear = thisyear
 # read the weekly and monthly forecast output
 weeklyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                              + "FUDweekly").to_xarray()

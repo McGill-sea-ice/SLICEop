@@ -43,20 +43,46 @@ yesterday = np.datetime64(
 start = np.datetime64(year + "-07-01")
 # load the time series of water temperature including the most recent and
 # extract the required date range
-tw = xr.open_dataset(
+twu = xr.open_dataset(
     path + "/downloads/Twater/Twater_Longueuil_updated.nc"
     ).sel(Date=slice(start, yesterday))
-# load the preprocessed data and compute a climatological seasonal cycle
-tw_c = xr.open_dataset(
-    path + "/prepro/Twater_Longueuil_preprocessed"
-    ).T_no_offset.groupby("Date.dayofyear").mean("Date").values
+# load the preprocessed data
+twp = xr.open_dataset(
+    path + "/prepro/Twater_Longueuil_preprocessed.nc"
+    )
+# remove mean offset from current season's data
+tw = (twu.T - twp.T_winter_offset.mean().values)
+# compute climatological cycle
+tw_c = twp.T_no_offset.groupby("Date.dayofyear").mean("Date").values[0:-1]
 # offest the climatology so that it runs from
-tw_c1 = tw_c[int(tw.Date[0].dt.dayofyear.values)::]
-tw_c2 = tw_c[0:59]
+tw_c1 = tw_c[182::]
+tw_c2 = tw_c[0:182]
 tw_clim = np.hstack([tw_c1, tw_c2])
-climtime = pd.date_range(start=datetime.datetime.strptime(year + " " + str(int(tw.Date[0].dt.dayofyear.values)), "%Y %j"),
-                         end=datetime.datetime.strptime(str(int(year) + 1) + " " + str(59), "%Y %j"),
-                         freq="1D")
+climtime = pd.date_range(
+    start=datetime.datetime.strptime("2001 182", "%Y %j"),
+    end=datetime.datetime.strptime("2002 181", "%Y %j"),
+    freq="1D"
+    )
+y = int(year)
+if y % 4 == 0 and (y % 100 != 0 or y % 400 == 0):
+    ctime = pd.date_range(
+        start=datetime.datetime.strptime(year + " " + str(183), "%Y %j"),
+        end=datetime.datetime.strptime(str(int(year) + 1) + " " + str(181),
+                                       "%Y %j"),
+        freq="1D"
+        )
+else:
+    ctime = pd.date_range(
+        start=datetime.datetime.strptime(year + " " + str(182), "%Y %j"),
+        end=datetime.datetime.strptime(str(int(year) + 1) + " " + str(181),
+                                       "%Y %j"),
+        freq="1D"
+        )
+tw = (twu.T.sel(Date=slice(str(ctime[0]), str(ctime[-1])))
+      - twp.T_winter_offset.mean().values)
+tw[tw < 0] = 0
+missing = 365 - len(tw)
+tw = list(list(tw) + [np.nan] * missing)
 
 with open(path + "/auto/frozen", "r") as f:
     frozen = f.read()
@@ -69,9 +95,9 @@ if frozen == "True":
 else:
     frozen = False
 
-xax_min = np.datetime64(year + "-07-01")
-xax_max = np.datetime64(str(int(year) + 1) + "-01-31")
-xticks = np.unique(pd.date_range(start=xax_min, freq="MS", periods=8).round("1D"))
+xax_min = np.datetime64("2001-07-01")
+xax_max = np.datetime64("2002-06-30")
+xticks = np.unique(pd.date_range(start=xax_min, freq="MS", periods=13).round("1D"))
 xticks_diff = xticks[1] - xticks[0]
 xtickmonths = [xticks[i].astype("datetime64[M]").astype(int) % 12 + 1 for i in range(0, len(xticks))]
 xtickdays = [(xticks[i].astype('datetime64[D]') - xticks[i].astype('datetime64[M]') + 1).astype(int) for i in range(0, len(xticks))]
@@ -100,11 +126,11 @@ for l in ["fr_CA", "en_CA"]:
     fig = plt.figure(figsize=(5, 4))
     ax1 = fig.add_subplot()
     ax1.plot(climtime, tw_clim, color="gray", ls="--", label=climlabel)
-    ax1.plot(tw.Date, tw.T, color="steelblue", lw=2, label=waterlabel)
+    ax1.plot(climtime, tw, color="steelblue", lw=2, label=waterlabel)
     if frozen:
-        ax1.vlines(np.datetime64(frozenDate), yax_min, yax_max, ls="--", color="dimgray")
+        ax1.vlines(np.datetime64(frozenDate), yax_min, yax_max, ls="--", color="firebrick")
         ax1.text(np.datetime64(frozenDate) + (xticks_diff/10), (yax_min + yax_max)/2, frozenlabel,
-                 ha="left", va="center", rotation=90, color="dimgray", fontsize=9)
+                 ha="left", va="center", rotation=90, color="firebrick", fontsize=9)
     ax1.set_xticks(xticks)
     ax1.set_xticklabels(xticklabels, rotation=45);
     ax1.tick_params(axis='x', which='major', pad=-10)
@@ -114,4 +140,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.set_title(title, fontweight="bold")
     plt.legend()
     plt.subplots_adjust(left=0.15, bottom=0.2, right=0.9)
-    plt.savefig(path + "/auto/Twater_" + l[0:2] +" .png", dpi=300)
+    plt.savefig(path + "/auto/Twater_" + l[0:2] +".png", dpi=300)
