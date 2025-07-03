@@ -52,7 +52,9 @@ elif (os.path.isfile(monthly_path) & (not os.path.isfile(weekly_path))):
 else:
     sys.exit("No data found to plot.")
 
-frozenCLIM = 356
+FUD = xr.open_dataset(path + "/prepro/FUD_preprocessed.nc")
+frozenCLIM = int(np.around(FUD.FUDoy.mean().values))
+
 yax_min = 343
 yax_max = 396
 ytick_spacing = np.max(np.diff(np.linspace(yax_min+1, yax_max-2, 10, dtype=int)))
