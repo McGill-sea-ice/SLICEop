@@ -57,5 +57,5 @@ if [[ m -le 6 ]]; then
     y=$((y-1))
 fi
 export YEAR=${y}
-export MONTH=06
+export MONTH=07
 python ${local_path}/prepro/yearly_preprocess.py
