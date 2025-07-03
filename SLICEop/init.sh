@@ -1,7 +1,15 @@
 #!/bin/bash
-local_path=$(echo $sliceop_path)
 
-source $(echo $sliceop_conda_path)
+if [[ -z "${SLICEOP_PATH}" ]]; then
+  echo "execute SLICEOP/setup.sh before running init.sh"
+  exit 1
+else
+  local_path=$(echo $SLICEOP_PATH)
+fi
+
+local_path=$(echo $SLICEOP_PATH)
+
+source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
 if [ ! -e ${local_path}/downloads/updatew ]; then
@@ -48,6 +56,6 @@ y=$(date +%Y)
 if [[ m -le 6 ]]; then
     y=$((y-1))
 fi
-export YEAR=y
+export YEAR=${y}
 export MONTH=06
 python ${local_path}/prepro/yearly_preprocess.py

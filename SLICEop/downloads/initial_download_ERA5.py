@@ -12,8 +12,8 @@ import cdsapi
 import numpy as np
 
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
-out_dir = path + "downloads/ERA5/"
+path = os.environ["SLICEOP_PATH"]
+out_dir = path + "/downloads/ERA5/"
 
 end_year = now.year - 1
 month = now.month
@@ -22,7 +22,7 @@ month = now.month
 # the first half of the year, we download only data up until two years ago
 # because the current season (that started the year before) is not yet
 # completed
-if month < 7:
+if month < 6:
     end_year = end_year - 1
 
 

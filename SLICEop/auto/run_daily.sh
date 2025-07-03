@@ -5,15 +5,27 @@ echo "---------- run_daily.sh -----------"
 echo " "
 date
 
+# check if the required environment variables are set, if not run setup.sh
+if [[ -z "${SLICEOP_PATH}" ]]; then
+  if [ $# -eq 0 ]; then
+    echo "run_daily.sh requires SLICEOP root directory as input argument"
+    exit 1
+  else
+    source $1/setup.sh
+    local_path=$(echo $SLICEOP_PATH)
+  fi
+else
+  local_path=$(echo $SLICEOP_PATH)
+fi
+
 # set 'requiredhost' because the daily water temperature data is only available
 # on 'crunch'
-requiredhost=$(echo $sliceop_twater_host)
-# define path to SLICEop
-local_path=$(echo $sliceop_path)
-backup=$(echo $sliceop_backup_path)
+requiredhost=$(echo $SLICEOP_TWATER_HOST)
+# define path for backup data
+backup=$(echo $SLICEOP_BACKUP_PATH)
 
 # load conda environment
-source $(echo $sliceop_conda_path)
+source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
 # make sure 'updated' is False, indicating that the daily update was not

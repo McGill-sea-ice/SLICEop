@@ -20,8 +20,8 @@ import csv
 import sys
 
 # path to SLICEop
-path = os.environ["sliceop_path"]
-thermistor_path = os.environ["sliceop_thermistor_path"]
+path = os.environ["SLICEOP_PATH"]
+thermistor_path = os.environ["SLICEOP_THERMISTOR_PATH"]
 
 # function to read data from thermistor (works for files newer than
 # Longueuil.dat4860.dat, before that the format was different)
@@ -42,9 +42,9 @@ def read_thermistor_new(inputfile):
     return tmp.drop_vars("index").sortby("Date")
 
 # load existing temperature record
-ds_in = xr.open_dataset(path + "downloads/Twater/Twater_Longueuil_updated.nc")
+ds_in = xr.open_dataset(path + "/downloads/Twater/Twater_Longueuil_updated.nc")
 # get lowest suffix for temperature data to be added to ds_in
-with open(path + "downloads/Twater/next.i", "rb") as f:
+with open(path + "/downloads/Twater/next.i", "rb") as f:
     lowest_i = int(f.read())
 f.close()
 print("Adding new data to Twater_Longueuil_updated.nc,"
@@ -63,13 +63,13 @@ tds = float((yesterday - firstday).values) / 1e9
 i = lowest_i
 if tds > 0:
     # read new temperature data from thermistor
-    da_update = read_thermistor_new(thermistor_path + "Longueuil.dat"
+    da_update = read_thermistor_new(thermistor_path + "/Longueuil.dat"
                                     + str(i) + ".dat")
     i += 1
     # add new data until the most recent file
-    while os.path.isfile(thermistor_path + "Longueuil.dat" + str(i) + ".dat"):
+    while os.path.isfile(thermistor_path + "/Longueuil.dat" + str(i) + ".dat"):
         try:
-            tmp = read_thermistor_new(thermistor_path + "Longueuil.dat"
+            tmp = read_thermistor_new(thermistor_path + "/Longueuil.dat"
                                       + str(i) + ".dat")
         except:
             # if there is an error of some sort, we will add a NaN to the
@@ -85,7 +85,7 @@ if tds > 0:
             break
     # save the last suffix added to da_update so that we can restart from there
     # the day after
-    with open(path + "downloads/Twater/next.i", "w") as f:
+    with open(path + "/downloads/Twater/next.i", "w") as f:
         f.write(str(i))
     f.close()
 else:
@@ -120,25 +120,25 @@ updated = xr.concat([ds_in,
 updated = updated.sortby("Date").drop_duplicates(dim="Date").compute()
 # save updated dataset
 ds_in.close()
-updated.to_netcdf(path + "downloads/Twater/Twater_Longueuil_updated.nc",
+updated.to_netcdf(path + "/downloads/Twater/Twater_Longueuil_updated.nc",
                   mode="w")
 # save info on whether data was updated
-with open(path + "downloads/Twater/updated", "w") as f:
+with open(path + "/downloads/Twater/updated", "w") as f:
     f.write(str("True"))
 f.close()
 # check if St. Lawrence is already frozen, if it is below 0.75 deg. Celsius
 # we consider it frozen
 if updated.T.isel(Date=-1).values < 0.75:
-    with open(path + "auto/frozen", "r") as f:
+    with open(path + "/auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     # if the river is frozen based on yesterdays water temperature, but it was
     # not frozen the day before, we consider yesterday as the freeze-up date and
     # write that date to a file
     if frozen == "False":
-        with open(path + "auto/frozenDate", "w") as f:
+        with open(path + "/auto/frozenDate", "w") as f:
             f.write(str(updated.Date.isel(Date=-1).values)[0:10])
         f.close()
-        with open(path + "auto/frozen", "w") as f:
+        with open(path + "/auto/frozen", "w") as f:
             f.write(str("True"))
         f.close()

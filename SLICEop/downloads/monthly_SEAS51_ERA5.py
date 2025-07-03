@@ -13,8 +13,8 @@ import numpy as np
 
 # define paths
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
-out_dir = path + "downloads/"
+path = os.environ["SLICEOP_PATH"]
+out_dir = path + "/downloads/"
 
 # if running TEST, take year, month, day from environment variables
 # otherwise extract year, month, day from `datetime.datetime.now
@@ -209,7 +209,7 @@ elif month in ["01", "02", "03", "04"]:
 else:
     # if in May or June, make sure to reset the variable `frozen` to `False`
     # in preparation for the next winter's forecast
-    with open(path + "auto/frozen", "r") as f:
+    with open(path + "/auto/frozen", "r") as f:
         frozen = f.read()
     f.close()
     if frozen == "True":
@@ -218,16 +218,16 @@ else:
         frozen = False
     if frozen:
         frozen = False
-        with open(path + "auto/frozen", "w") as f:
+        with open(path + "/auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
     print("no forecast can be made before July")
 
 # save info on whether data was updated
-with open(path + "downloads/updatem", "w") as f:
+with open(path + "/downloads/updatem", "w") as f:
     f.write(str("True"))
 f.close()
 if updatey:
-    with open(path + "downloads/updatey", "w") as f:
+    with open(path + "/downloads/updatey", "w") as f:
         f.write(str("True"))
     f.close()

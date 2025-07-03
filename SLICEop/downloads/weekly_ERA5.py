@@ -16,8 +16,8 @@ import numpy as np
 
 # define paths
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
-out_dir = path + "downloads/"
+path = os.environ["SLICEOP_PATH"]
+out_dir = path + "/downloads/"
 
 # if running TEST, take year, month, day from environment variables
 # otherwise extract year, month, day from `datetime.datetime.now
@@ -25,6 +25,7 @@ if os.environ["TEST"]=="True":
     year = os.environ["YEAR"]
     month = os.environ["MONTH"]
     day = int(os.environ["DAY"])
+    max_day = day - 5
 else:
     year = f"{now.year:04d}"
     month = f"{now.month:02d}"
@@ -81,7 +82,7 @@ def download_era5(var, month, year, output_dir, lats, lons):
             os.remove(filename)
     return
 
-    def download_era5_test(var, month, year, max_day, output_dir, lats, lons):
+def download_era5_test(var, month, year, max_day, output_dir, lats, lons):
     filename = output_dir + "ERA5_" + str(year) + month + "_" + var + ".partial.grib"
     print("Downloading " + var + " for " + str(year) + month + " from ERA5")
     try:
@@ -123,11 +124,13 @@ months = ['12', '11', '09']
 lats = np.array([43.25, 46.00])
 lons = np.array([-77.25, -73.25])
 
+# use different function when in testing environment and specify max_day, the day up until
+# which ERA5 would be available at datetime.now() if this were not a test
 if os.environ["TEST"]=="True":
     if month == "09":
         if max_day > 0:
             try:
-                download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[2] + " not downloaded")
     elif month == "10":
@@ -137,19 +140,19 @@ if os.environ["TEST"]=="True":
             else:
                 max_day = 30 + max_day
             try:
-                download_era5(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[2], months[2], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[2] + " not downloaded")
         else:
             try:
-                os.remove(local_path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                           + year + months[2] + "_" + variables[2] +  ".partial.grib")
             except:
                 pass
     elif month == "11":
         if max_day > 0:
             try:
-                download_era5(variables[1], months[1], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[1], months[1], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[1] + " not downloaded")
     elif month == "12":
@@ -157,24 +160,24 @@ if os.environ["TEST"]=="True":
             if max_day > 0:
                 max_day1 = 30
                 try:
-                    download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
-                    download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
                 except:
                     print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
             else:
                 max_day1 = 30 + max_day
                 try:
-                    download_era5(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
+                    download_era5_test(variables[1], months[1], year, max_day1, out_dir + "ERA5/", lats, lons)
                 except:
                     print("ERA5 " + variables[1] + " and " + variables[0] + " not downloaded")
         else:
             try:
-                os.remove(local_path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                           + year + months[1] + "_" + variables[1] +  ".partial.grib")
             except:
                 pass
             try:
-                download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[0] + " not downloaded")
     elif month == "01":
@@ -185,17 +188,17 @@ if os.environ["TEST"]=="True":
             else:
                 max_day = 31 + max_day
             try:
-                download_era5(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
+                download_era5_test(variables[0], months[0], year, max_day, out_dir + "ERA5/", lats, lons)
             except:
                 print("ERA5 " + variables[0] + " not downloaded")
         else:
             try:
-                os.remove(local_path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                           + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
     else:
-        with open(local_path + "auto/frozen", "r") as f:
+        with open(path + "/auto/frozen", "r") as f:
             frozen = f.read()
         f.close()
         if frozen == "True":
@@ -204,7 +207,7 @@ if os.environ["TEST"]=="True":
             frozen = False
         if frozen:
             frozen = False
-            with open(local_path + "test/auto/frozen", "w") as f:
+            with open(path + "/auto/frozen", "w") as f:
                 f.write(str(frozen))
             f.close()
         print("No additional data found to improve the forecast ")
@@ -228,7 +231,7 @@ else:
        	        print("ERA5 " + variables[2] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                           + year + months[2] + "_" + variables[2] +  ".partial.grib")
             except:
                 pass
@@ -252,7 +255,7 @@ else:
                 print("ERA5 " + variables[1] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                         + year + months[1] + "_" + variables[1] +  ".partial.grib")
             except:
                 pass
@@ -272,14 +275,14 @@ else:
                 print("ERA5 " + variables[0] + " not downloaded")
         else:
             try:
-                os.remove(path + "downloads/ERA5/ERA5_"
+                os.remove(path + "/downloads/ERA5/ERA5_"
                         + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
     else:
         # if in May or June, make sure to reset the variable `frozen` to `False`
         # in preparation for the next winter's forecast
-        with open(path + "auto/frozen", "r") as f:
+        with open(path + "/auto/frozen", "r") as f:
             frozen = f.read()
         f.close()
         if frozen == "True":
@@ -288,12 +291,12 @@ else:
             frozen = False
         if frozen:
             frozen = False
-        with open(path + "auto/frozen", "w") as f:
+        with open(path + "/auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
         print("No additional data found to improve the forecast ")
 
 # save info on whether data was updated
-with open(path + "downloads/updatew", "w") as f:
+with open(path + "/downloads/updatew", "w") as f:
     f.write(str("True"))
 f.close()

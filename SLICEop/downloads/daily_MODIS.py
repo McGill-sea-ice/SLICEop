@@ -10,8 +10,8 @@ import requests
 
 now = datetime.datetime.now()
 # specify directory to store the downloaded image
-path = os.environ["sliceop_path"]
-out_dir = path + "downloads/MODIS/"
+path = os.environ["SLICEOP_PATH"]
+out_dir = path + "/downloads/MODIS/"
 
 # extract year, month and day from datetime.datetime.now()
 year = f"{now.year:04d}"

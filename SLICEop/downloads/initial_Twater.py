@@ -22,12 +22,13 @@ import os
 import time
 import datetime
 import csv
+import sys
 
 # define path and verify that we are on crunch (the thermistor data from the
 # water treatment plant are tranferred to crunch and are only accessible there)
-requiredhost=$(echo $sliceop_twater_host)
-path = os.environ["sliceop_path"]
-thermistor_path = os.environ["sliceop_thermistor_path"]
+requiredhost=os.environ["SLICEOP_TWATER_HOST"]
+path = os.environ["SLICEOP_PATH"]
+thermistor_path = os.environ["SLICEOP_THERMISTOR_PATH"]
 myhost = os.uname()[1]
 if requiredhost not in myhost:
     sys.exit("Not on " + requiredhost +
@@ -35,14 +36,14 @@ if requiredhost not in myhost:
 
 # if Twater_Longueuil_permanent.nc already exists, this script has already
 # been run successfully and we do not run it again!
-if os.path.isfile(path + "downloads/Twater/Twater_Longueuil_permanent.nc"):
-    sys.exit(path + "downloads/Twater/Twater_Longueuil_permanent.nc already"
+if os.path.isfile(path + "/downloads/Twater/Twater_Longueuil_permanent.nc"):
+    sys.exit(path + "/downloads/Twater/Twater_Longueuil_permanent.nc already"
              + " exists, initial_Twater.py has already been executed!")
 
 # first we load the data that was created before the automatic transmission of
 # the water temperatures from the thermistor
 longueuil_in = pd.read_csv(
-    path + "downloads/Twater/Tw_Longueuil_updated.csv"
+    path + "/downloads/Twater/Tw_Longueuil_updated.csv"
     ).to_xarray().set_coords("Date").isel(index=slice(None, -1))
 # convert time axis and variable names for easier use
 longueuil_in["Date"] = pd.DatetimeIndex(longueuil_in['Date'].values)
@@ -84,7 +85,7 @@ longueuil_ext = xr.merge(
 # has been re-transfered with correct time stamps
 # we do the same converting/renaming as before
 thermistor = pd.read_csv(
-    path + "downloads/Twater/StationLongueuil.dat",
+    path + "/downloads/Twater/StationLongueuil.dat",
     sep=",", header=3, low_memory=False
     ).to_xarray()
 thermistor = thermistor.rename(
@@ -108,9 +109,9 @@ combined = xr.merge([longueuil_up2thermistor, thermistor_daily])
 # Longueuil.dat4835.dat to Longueuil.dat4844.dat do not have timestamps... so
 # we add 2024-12-17 based on the creation time of the files
 manu_range = np.arange(4836, 4860)
-stime = time.ctime(os.path.getmtime(thermistor_path + "Longueuil.dat"
+stime = time.ctime(os.path.getmtime(thermistor_path + "/Longueuil.dat"
                                     + str(manu_range[0]-1) + ".dat"))
-etime = time.ctime(os.path.getmtime(thermistor_path + "Longueuil.dat"
+etime = time.ctime(os.path.getmtime(thermistor_path + "/Longueuil.dat"
                                     + str(manu_range[-1]-1) + ".dat"))
 starttime = datetime.datetime.strptime(stime, "%a %b %d %H:%M:%S %Y")
 endtime = datetime.datetime.strptime(etime, "%a %b %d %H:%M:%S %Y")
@@ -130,13 +131,13 @@ def read_thermistor(path):
 # read in the thermistor data without time stamps and add those time stamps from
 # the `pandas.date_range` `tr` that we created
 t = 0
-da = read_thermistor(thermistor_path + "Longueuil.dat"
+da = read_thermistor(thermistor_path + "/Longueuil.dat"
                      + str(manu_range[0]) + ".dat")
 da["index"] = tr[t:t+len(da.index)]
 da = da.rename({"index": "Date"})
 t += len(da.Date)
 for i in range(manu_range[0]+1, manu_range[-1]+1):
-    tmp = read_thermistor(thermistor_path + "Longueuil.dat" + str(i) + ".dat")
+    tmp = read_thermistor(thermistor_path + "/Longueuil.dat" + str(i) + ".dat")
     tmp["index"] = tr[t:t+len(tmp.index)]
     tmp = tmp.rename({"index": "Date"})
     da = xr.concat((da, tmp), dim="Date")
@@ -149,13 +150,13 @@ combined = xr.merge([combined, da_2024_12_17])
 # that follows, so we will save it to a permanent file.
 # Everything that comes after 2024-12-17 is then added to this file daily and
 # saved to a updated file.
-combined.to_netcdf(path + "downloads/Twater/Twater_Longueuil_permanent.nc")
+combined.to_netcdf(path + "/downloads/Twater/Twater_Longueuil_permanent.nc")
 # The file for the updated dataset contains the same as the permanent for now.
-combined.to_netcdf(path + "downloads/Twater/Twater_Longueuil_updated.nc")
+combined.to_netcdf(path + "/downloads/Twater/Twater_Longueuil_updated.nc")
 # From 2024-12-18 onward thermistor data has a timestamp and we can easliy add
 #it to existing files. The first to add is file number
 # 4860, we save that number to the file `next.i` for the daily updating script
 # to read.
-with open(path + "downloads/Twater/next.i", "w") as f:
+with open(path + "/downloads/Twater/next.i", "w") as f:
     f.write("4860")
 f.close()

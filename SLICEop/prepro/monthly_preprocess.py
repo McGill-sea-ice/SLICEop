@@ -14,7 +14,7 @@ import xarray as xr
 
 # define path
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 
 # if running TEST, take year, month from environment variables
 # otherwise extract year, month from `datetime.datetime.now
@@ -45,13 +45,13 @@ monthly_vars = xr.Dataset()
 
 for v in range(0, len(variables)):
     # define filenames to load
-    era5name = str(path + "downloads/ERA5/ERA5_" + year + months[v] + "_"
+    era5name = str(path + "/downloads/ERA5/ERA5_" + year + months[v] + "_"
                    + variables[v] +  ".grib")
     if int(months[v]) < int(month):
-        seas51name = str(path + "downloads/SEAS51/SEAS51_" + year + months[v]
+        seas51name = str(path + "/downloads/SEAS51/SEAS51_" + year + months[v]
                          + "_" + variables[v] + ".grib")
     else:
-        seas51name = str(path + "downloads/SEAS51/SEAS51_" + year + month + "_"
+        seas51name = str(path + "/downloads/SEAS51/SEAS51_" + year + month + "_"
                          + variables[v] + ".grib")
     # always use ERA5 data if it is available
     if os.path.isfile(era5name):
@@ -142,9 +142,9 @@ for v in range(0, len(variables)):
         sys.exit(variables[v] + " not found")
 
 # save data to disk
-monthly_vars.to_netcdf(path + "prepro/input_forecast.nc")
+monthly_vars.to_netcdf(path + "/prepro/input_forecast.nc")
 
 # save information on whether the preprocessing was succesful or not
-with open(path + "prepro/prepro", "w") as f:
+with open(path + "/prepro/prepro", "w") as f:
     f.write(str("True"))
 f.close()
