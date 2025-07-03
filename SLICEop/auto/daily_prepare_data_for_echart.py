@@ -190,7 +190,7 @@ for y in np.arange(ymin, tyear):
             )
     # if we are in the current season, remove the mean offset to make the
     # recent data comparable to preprocessed data from past seasons
-    if ((tyear > thisyear) | ((y==tyear-1) & (thismonth<=6))):
+    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
         # subtract the mean offset
         tw_out = (tw_up.T.sel(Date=slice(str(ctime[0]), str(ctime[-1])))
                   - tw.T_winter_offset.mean()).values
@@ -211,7 +211,7 @@ for y in np.arange(ymin, tyear):
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # add either the observed or forecasted freeze-up date to the
     # time series of freeze-up dates
-    if ((tyear > thisyear) | ((y==tyear-1) & (thismonth<=6))):
+    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
         if not frozen:
             fuds[str(y) + "/" + str(y+1)] = latest["latestForecast"][5:10]
         else:
