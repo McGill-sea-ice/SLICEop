@@ -121,12 +121,12 @@ else:
 # convert the latest forecasted dayofyear to a date
 if latestFUD < 182:
     latest["latestForecast"] = str(
-        datetime.datetime.strptime(str(tyear + 1) + " " + str(int(latestFUD)),
+        datetime.datetime.strptime(str(tyear + 1) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
         )[0:10]
 else:
     latest["latestForecast"] = str(
-        datetime.datetime.strptime(str(tyear) + " " + str(int(latestFUD)),
+        datetime.datetime.strptime(str(tyear) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
         )[0:10]
 
@@ -229,7 +229,7 @@ fudoys = np.array([
     ])
 fudoys[fudoys<182] = fudoys[fudoys<182] + 365
 fuds["clim"] = str(datetime.datetime.strptime("2001 "
-    + str(int(np.mean(fudoys))), "%Y %j"))[5:10]
+    + str(int(np.around(np.mean(fudoys)))), "%Y %j"))[5:10]
 
 # save data to json files
 with open(path + '/echart/sliceop_data.json', 'w') as fp:

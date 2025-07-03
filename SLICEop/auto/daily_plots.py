@@ -58,9 +58,9 @@ FUD = xr.open_dataset(
 fud_clim = FUD.FUDoy.mean().values
 if fud_clim > 365:
     fud_clim -= 365
-    climfrozenDate = str(datetime.datetime.strptime("2002 " + str(int(fud_clim)), "%Y %j"))
+    climfrozenDate = str(datetime.datetime.strptime("2002 " + str(int(np.around(fud_clim))), "%Y %j"))
 else:
-    climfrozenDate = str(datetime.datetime.strptime("2001 " + str(int(fud_clim)), "%Y %j"))
+    climfrozenDate = str(datetime.datetime.strptime("2001 " + str(int(np.around(fud_clim))), "%Y %j"))
 # read the weekly and monthly forecast output
 if ((int(month)==7) & (int(day)<8)):
     weeklyForecast = pd.read_csv(path + "/auto/" + str(int(year)-1)
@@ -92,12 +92,12 @@ else:
 # convert the latest forecasted dayofyear to a date
 if latestFUD < 182:
     latestForecast = str(
-        datetime.datetime.strptime(str(year + 1) + " " + str(int(latestFUD)),
+        datetime.datetime.strptime(str(year + 1) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
         )[0:10]
 else:
     latestForecast = str(
-        datetime.datetime.strptime(str(year) + " " + str(int(latestFUD)),
+        datetime.datetime.strptime(str(year) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
         )[0:10]
 # remove mean offset from current season's data
