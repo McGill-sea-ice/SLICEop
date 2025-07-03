@@ -134,7 +134,7 @@ for l in ["fr_CA", "en_CA"]:
     ax1.plot(FUDmonthly.time, FUDmonthly.FUD.sel(number=0), color="darkorange", marker="x", lw=0, ms=8, mew=3, label=l2label)
     # plot the climatological freeze-up date as a horizontal line
     ax1.hlines(frozenCLIM, xax_min, xax_max, ls="--", color="dimgray")
-    ax1.text(np.datetime64(str(int(year) + 1) + "-02-08"), frozenDOY-1, climlabel,
+    ax1.text(np.datetime64(str(int(year) + 1) + "-02-08"), frozenCLIM-1, climlabel,
              ha="right", va="top", rotation=0, color="dimgray", fontsize=6)
     # set labels, limits, ticks, etc.
     ax1.set_xlabel(xlabel)
