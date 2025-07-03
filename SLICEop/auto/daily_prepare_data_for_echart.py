@@ -17,11 +17,12 @@ import cmocean.cm as cmo
 
 # define path
 now = datetime.datetime.now()
-path = os.environ["sliceop_path"]
+path = os.environ["SLICEOP_PATH"]
 
 # get year and month from `datetime.now()`
 thisyear = now.year
 thismonth = now.month
+today = now.day
 # first year to include in echart
 ymin = 1992
 
@@ -86,7 +87,13 @@ latest = {}
 if thismonth < 6:
     tyear = thisyear - 1
 else:
-    tyear = thisyear
+    if thismonth == 7:
+        if today < 8:
+            tyear = thisyear - 1
+        else:
+            tyear = thisyear
+    else:
+        tyear = thisyear
 # read the weekly and monthly forecast output
 weeklyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                              + "FUDweekly").to_xarray()
@@ -183,7 +190,7 @@ for y in np.arange(ymin, tyear):
             )
     # if we are in the current season, remove the mean offset to make the
     # recent data comparable to preprocessed data from past seasons
-    if ((tyear > thisyear) | ((y==tyear-1) & (thismonth<=6))):
+    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
         # subtract the mean offset
         tw_out = (tw_up.T.sel(Date=slice(str(ctime[0]), str(ctime[-1])))
                   - tw.T_winter_offset.mean()).values
@@ -204,7 +211,7 @@ for y in np.arange(ymin, tyear):
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # add either the observed or forecasted freeze-up date to the
     # time series of freeze-up dates
-    if ((tyear > thisyear) | ((y==tyear-1) & (thismonth<=6))):
+    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
         if not frozen:
             fuds[str(y) + "/" + str(y+1)] = latest["latestForecast"][5:10]
         else:

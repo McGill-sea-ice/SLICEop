@@ -21,12 +21,12 @@ if os.environ["TEST"]=="True":
     year = os.environ["YEAR"]
     month = os.environ["MONTH"]
 else:
-    year = f"{(now.year - 1):04d}"
+    year = f"{now.year:04d}"
     month = f"{now.month:02d}"
 
-# exit if the month is not June, this script should only run in June!
-if month != "06":
-    sys.exit("This script should run in June, something went wrong.")
+# exit if the month is not July, this script should only run in July!
+if month != "07":
+    sys.exit("This script should run in July, something went wrong.")
 
 #### water temperature Tw
 ### remove periods of constant T (unless T is near the freezing point)
@@ -107,7 +107,7 @@ Tw["T_processed"] = Tw_processed
 Tw["T_winter_offset"] = Tw_offset
 Tw["T_no_offset"] = Tw_no_offset
 print("saving T_water")
-Tw.sel(Date=slice(None, year + "-12-31")).to_netcdf(path
+Tw.sel(Date=slice(None, year + "-06-30")).to_netcdf(path
     + "/prepro/Twater_Longueuil_preprocessed.nc")
 
 #### freeze-up date FUD
@@ -121,13 +121,13 @@ Tfreezing = Tw.T_no_offset.where(Tw.T_no_offset <= 0.75, 0)
 Tfreezing[Tfreezing > 0] = 1
 # construct bins to group the temperature into winters
 bins = []
-for y in np.arange(y_min, y_max+1):
+for y in np.arange(y_min, y_max):
     bins = bins + [str(y) + "-11-01"] + [str(y+1) + "-05-31"]
 bins = np.array(bins, dtype='datetime64')
 # group together data of each winter and find the index when water is first
 # frozen, i.e. Tfreezing=1
 FUD = Tfreezing.groupby_bins("Date", bins=bins).apply(lambda da:
-    da.idxmax(dim="Date"))[0:-1:2].rename({"Date_bins": "time"}).rename("FUD")
+    da.idxmax(dim="Date"))[0::2].rename({"Date_bins": "time"}).rename("FUD")
 # make a time axis for the FUD series
 FUD["time"] = np.arange(y_min, y_max)
 FUD = FUD.to_dataset()

@@ -29,5 +29,5 @@ root_dir=/aos/home/jrieck/src/SLICEop
 # run monthly script at 10:30AM  on the 7th of each month
 30 10 7 * * ${root_dir}/SLICEOP/auto/run_monthly.sh ${root_dir} &>> ${root_dir}/auto/run_monthly.log
 
-# run yearly script at noon on the 10th of June
-0 12 10 6 * ${roor_dir}/SLICEOP/auto/run_yearly.sh ${root_dir} &>> ${root_dir}/auto/run_yearly.log
+# run yearly script at noon on the 6th of July
+0 12 6 7 * ${roor_dir}/SLICEOP/auto/run_yearly.sh ${root_dir} &>> ${root_dir}/auto/run_yearly.log

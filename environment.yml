@@ -6,6 +6,7 @@ dependencies:
   - cfgrib
   - pandas
   - matplotlib
+  - cmocean
   - requests
   - xarray
   - cdsapi
