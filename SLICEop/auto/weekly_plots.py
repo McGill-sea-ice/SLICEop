@@ -151,4 +151,4 @@ for l in ["fr_CA", "en_CA"]:
     ax1.text(0.02, 0.98, year, transform = ax1.transAxes, fontsize=18, ha="left", va="top")
     ax1.set_title(title, fontweight="bold")
     plt.subplots_adjust(left=0.2, bottom=0.2, right=0.95)
-    plt.savefig(path + "/auto/forecast" + l[0:2] + ".jpg", dpi=300)
+    plt.savefig(path + "/auto/forecast" + l[0:2] + ".png", dpi=300)
