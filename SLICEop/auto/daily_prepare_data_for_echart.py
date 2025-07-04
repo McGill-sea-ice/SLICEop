@@ -84,7 +84,7 @@ else:
 latest = {}
 # depending on the month we are in, a different year will be in the name of the
 # required file
-if thismonth < 6:
+if thismonth < 7:
     tyear = thisyear - 1
 else:
     if thismonth == 7:
