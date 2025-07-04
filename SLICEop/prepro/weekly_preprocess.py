@@ -156,16 +156,23 @@ for v in range(0, len(variables)):
             # transform tempertaure to Celsius
             if ((short_vars[v] == "t2m") & (era5p[short_vars[v]].units == "K")):
                 era5p[short_vars[v]] = era5p[short_vars[v]] - 273.15
+            # count number of data points per day do detect full days
+            fullday = era5p.time.resample(time="1D").count()
             # compute daily sums from hourly sums if method is "sum"
+            # only keep full days
             if method[v] == "sum":
                 era5p = era5p.mean(
                     ("longitude", "latitude")
-                    ).resample(time="1D").sum().sel(time=mslice)
+                    ).resample(time="1D").sum().where(fullday==24).dropna(
+                        "time"
+                        ).sel(time=mslice)
             # compute daily average from hourly average if method is "mean"
             elif method[v] == "mean":
                 era5p = era5p.mean(
                     ("longitude", "latitude")
-                    ).resample(time="1D").mean().sel(time=mslice)
+                    ).resample(time="1D").mean().where(fullday==24).dropna(
+                        "time"
+                        ).sel(time=mslice)
             seas51 = seas51.mean(
                 ("longitude", "latitude")
                 ).transpose("number", "step")
@@ -183,18 +190,30 @@ for v in range(0, len(variables)):
                 # 'i2' to add the sum of i1:i2
                 if method[v] == "sum":
                     old_sum_at_i2 = seas51[short_vars[v]][:, i2].copy().values
-                    seas51[short_vars[v]][:, i1:i2+1] = np.array(
-                        era5p[short_vars[v]].cumsum("time")[i1p::].values
-                        )
+                    # need to add dummy dimension if there is only one data
+                    # point in era5p
+                    if len(era5p.time) == 1:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]].cumsum("time")[i1p::].values
+                            )[:, None]
+                    else:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]].cumsum("time")[i1p::].values
+                            )
                     seas51[short_vars[v]][:, i2+1::] = np.array(
                         seas51[short_vars[v]][:, i2+1::].values
                         - old_sum_at_i2[:, None]
                         + seas51[short_vars[v]][:, i2].values[:, None]
                         )
                 elif method[v] == "mean":
-                    seas51[short_vars[v]][:, i1:i2+1] = np.array(
-                        era5p[short_vars[v]][i1p::].values
-                        )
+                    if len(era5p.time) == 1:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]][i1p::].values
+                            )[:, None]
+                    else:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]][i1p::].values
+                            )
             # when SEAS5.1 is issued before ERA5, the first of the month is
             # included in SEAS5.1
             else:
@@ -206,18 +225,28 @@ for v in range(0, len(variables)):
                 # 'i2' to add the sum of i1:i2
                 if method[v] == "sum":
                     old_sum_at_i2 = seas51[short_vars[v]][:, i2].copy().values
-                    seas51[short_vars[v]][:, i1:i2+1] = np.array(
-                        seas51[short_vars[v]][:, i1-1].values
-                        + era5p[short_vars[v]].cumsum("time")[i1p::].values
-                        )
+                    if len(era5p.time) == 1:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            seas51[short_vars[v]][:, i1-1].values
+                            + era5p[short_vars[v]].cumsum("time")[i1p::].values
+                            )[:, None]
+                    else:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            seas51[short_vars[v]][:, i1-1].values
+                            + era5p[short_vars[v]].cumsum("time")[i1p::].values
+                            )
                     seas51[short_vars[v]][:, i2+1::] = np.array(
                         seas51[short_vars[v]][:, i2+1::].values
                         - old_sum_at_i2[:, None]
                         + seas51[short_vars[v]][:, i2].values[:, None]
                         )
                 elif method[v] == "mean":
-                    seas51[short_vars[v]][:, i1:i2+1] = np.array(
-                        era5p[short_vars[v]][i1p::].values)
+                    if len(era5p.time) == 1:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]][i1p::].values)[:, None]
+                    else:
+                        seas51[short_vars[v]][:, i1:i2+1] = np.array(
+                            era5p[short_vars[v]][i1p::].values)
         # use SEAS5.1 if ERA5 is not available
         else:
             seas51 = seas51.mean(("longitude", "latitude"))
