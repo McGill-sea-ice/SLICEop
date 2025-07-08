@@ -62,16 +62,19 @@ if fud_clim > 365:
 else:
     climfrozenDate = str(datetime.datetime.strptime("2001 " + str(int(np.around(fud_clim))), "%Y %j"))
 # read the weekly and monthly forecast output
-if ((int(month)==7) & (int(day)<8)):
+if ((int(month)==7) & (int(day)<7)):
     weeklyForecast = pd.read_csv(path + "/auto/" + str(int(year)-1)
                                  + "FUDweekly").to_xarray()
     monthlyForecast = pd.read_csv(path + "/auto/" + str(int(year)-1)
                                   + "FUDmonthly").to_xarray()
 else:
-    weeklyForecast = pd.read_csv(path + "/auto/" + str(year)
-                                 + "FUDweekly").to_xarray()
     monthlyForecast = pd.read_csv(path + "/auto/" + str(year)
                                   + "FUDmonthly").to_xarray()
+    try:
+        weeklyForecast = pd.read_csv(path + "/auto/" + str(year)
+                                     + "FUDweekly").to_xarray()
+    except:
+        weeklyForecast = monthlyForecast
 # get the dates of the latest weekly and monthly forecast
 latestWeekly = weeklyForecast.time[-1].values
 latestMonthly = weeklyForecast.time[-1].values
@@ -210,7 +213,7 @@ for l in ["fr_CA", "en_CA"]:
                  ha="left", va="center", rotation=90, color="firebrick", fontsize=9)
     # if not frozen, plot the forecasted freeze-up if available
     else:
-        if ((int(month)==7) & (int(day)<8)):
+        if ((int(month)==7) & (int(day)<7)):
             pass
         else:
             ax1.vlines(np.datetime64(latestForecast), -1, tw.T.max()+1, ls="--", color="darkorange")
