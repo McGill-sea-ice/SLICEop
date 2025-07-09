@@ -67,11 +67,9 @@ else
     printf "\nHost is not $requiredhost, cannot access daily water"\
         " temperature!\n"
 fi
-# plot time series if update was successful
-if [[ ${updated} == True ]]; then
-    printf "\nPlotting water temperature.\n"
-    python ${local_path}/auto/daily_plots.py
-fi
+# plot time series
+printf "\nPlotting water temperature.\n"
+python ${local_path}/auto/daily_plots.py
 
 # download the latest MODIS stellite image of the Montreal region from NASA
 # worldview
