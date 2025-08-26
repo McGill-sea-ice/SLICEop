@@ -88,17 +88,21 @@ if thismonth < 7:
     tyear = thisyear - 1
 else:
     if thismonth == 7:
-        if today < 8:
+        if today < 7:
             tyear = thisyear - 1
         else:
             tyear = thisyear
     else:
         tyear = thisyear
 # read the weekly and monthly forecast output
-weeklyForecast = pd.read_csv(path + "/auto/" + str(tyear)
-                             + "FUDweekly").to_xarray()
 monthlyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                               + "FUDmonthly").to_xarray()
+try:
+    weeklyForecast = pd.read_csv(path + "/auto/" + str(year)
+                                 + "FUDweekly").to_xarray()
+except:
+    weeklyForecast = monthlyForecast
+
 # get the dates of the latest weekly and monthly forecast
 latestWeekly = weeklyForecast.time[-1].values
 latestMonthly = weeklyForecast.time[-1].values

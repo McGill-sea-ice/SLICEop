@@ -28,6 +28,28 @@ backup=$(echo $SLICEOP_BACKUP_PATH)
 source $(echo $SLICEOP_CONDA_PATH)
 conda activate sliceop
 
+# check if updatey is 'True' , if not, something went wrong and we need to
+# download ERA5 data for the previous year.
+updatey=$(cat ${local_path}/downloads/updatey)
+if [[ ${updatey} == False ]]; then
+    printf "\nUpdating last year's ERA5 data:\n"
+    python ${local_path}/downloads/backup_yearly_ERA5.py
+fi
+
+# check if updatem is 'True' , if not, something went wrong and we need to
+# run run_monthly.sh again.
+updatem=$(cat ${local_path}/downloads/updatem)
+if [[ ${updatem} == False ]]; then
+    ${local_path}/auto/run_monthly.sh
+fi
+
+# check if updatem is 'True' , if not, something went wrong and we need to
+# run run_monthly.sh again.
+updatew=$(cat ${local_path}/downloads/updatew)
+if [[ ${updatew} == False ]]; then
+    ${local_path}/auto/run_weekly.sh
+fi
+
 # make sure 'updated' is False, indicating that the daily update was not
 # yet succesful (will be set to True within daily_Twater.py if successful)
 echo False > ${local_path}/downloads/Twater/updated
@@ -45,11 +67,9 @@ else
     printf "\nHost is not $requiredhost, cannot access daily water"\
         " temperature!\n"
 fi
-# plot time series if update was successful
-if [[ ${updated} == True ]]; then
-    printf "\nPlotting water temperature.\n"
-    python ${local_path}/auto/daily_plots.py
-fi
+# plot time series
+printf "\nPlotting water temperature.\n"
+python ${local_path}/auto/daily_plots.py
 
 # download the latest MODIS stellite image of the Montreal region from NASA
 # worldview

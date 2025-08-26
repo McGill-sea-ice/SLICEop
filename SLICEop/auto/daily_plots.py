@@ -94,15 +94,15 @@ else:
          ).mean().FUD.values
 # convert the latest forecasted dayofyear to a date
 if latestFUD < 182:
-    latestForecast = str(
+    latestForecast = "2002" + str(
         datetime.datetime.strptime(str(year + 1) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
-        )[0:10]
+        )[4:10]
 else:
-    latestForecast = str(
+    latestForecast = "2001" + str(
         datetime.datetime.strptime(str(year) + " " + str(int(np.around(latestFUD))),
                                    "%Y %j")
-        )[0:10]
+        )[4:10]
 # remove mean offset from current season's data
 tw = (twu.T - twp.T_winter_offset.mean().values)
 # compute climatological cycle
@@ -155,6 +155,10 @@ if frozen == "True":
     with open(path + "/auto/frozenDate", "r") as f:
         frozenDate = f.read()
     f.close()
+    if frozenDate[0:4] == str(year):
+        frozenDate = "2001" + frozenDate[4:10]
+    elif frozenDate[0:4] == str(int(year)+1):
+        frozenDate = "2002" + frozenDate[4:10]
 else:
     frozen = False
 
@@ -216,7 +220,7 @@ for l in ["fr_CA", "en_CA"]:
         if ((int(month)==7) & (int(day)<7)):
             pass
         else:
-            ax1.vlines(np.datetime64(latestForecast), -1, tw.T.max()+1, ls="--", color="darkorange")
+            ax1.vlines(np.datetime64(latestForecast), yax_min, yax_max, ls="--", color="darkorange")
             ax1.text(np.datetime64(latestForecast) + (xticks_diff/10), (yax_min + yax_max)/2, forecastlabel,
                      ha="left", va="center", rotation=90, color="darkorange", fontsize=9)
     ax1.set_xticks(xticks)
@@ -225,6 +229,10 @@ for l in ["fr_CA", "en_CA"]:
     ax1.set_ylabel(r"$^{\circ}$C")
     ax1.set_ylim(yax_min, yax_max)
     ax1.grid(linestyle="--")
+    ax1.text(xax_min + (xticks_diff*1.2), yax_min+1, year, ha="right", va="bottom", color="k",
+             fontsize=12, bbox=dict(facecolor='white', edgecolor='None', alpha=0.7))
+    ax1.text(xax_max - (xticks_diff*1.2), yax_min+1, str(int(year) + 1), ha="left", va="bottom", color="k",
+             fontsize=12, bbox=dict(facecolor='white', edgecolor='None', alpha=0.7))
     ax1.set_title(title, fontweight="bold")
     plt.legend()
     plt.subplots_adjust(left=0.15, bottom=0.2, right=0.9)

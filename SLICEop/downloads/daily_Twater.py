@@ -28,7 +28,8 @@ thermistor_path = os.environ["SLICEOP_THERMISTOR_PATH"]
 def read_thermistor_new(inputfile):
     # read thermistor data and convert to xarray, define dimension names
     tmp = pd.read_csv(inputfile, sep=",",  header=None,
-        quoting=csv.QUOTE_ALL).to_xarray().rename({0: "Date",
+        quoting=csv.QUOTE_ALL, engine="python",
+        on_bad_lines='skip', skipfooter=1).to_xarray().rename({0: "Date",
             2: "T"}).drop_vars((1, 3, 4, 5))
     # set Date as coordinate and add it as an index
     tmp = tmp.set_coords("Date")
