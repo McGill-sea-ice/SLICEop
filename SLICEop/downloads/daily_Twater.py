@@ -63,13 +63,28 @@ tds = float((yesterday - firstday).values) / 1e9
 # load data from thermistor
 i = lowest_i
 if tds > 0:
-    # read new temperature data from thermistor
-    try:
-        da_update = read_thermistor_new(thermistor_path + "/Longueuil.dat"
-                                        + str(i) + ".dat")
-    except:
-        sys.exit("No additional temperature data found.")
-    i += 1
+    # read new temperature data from thermistor if filesize is not zero
+    if os.path.getsize(thermistor_path + "/Longueuil.dat"
+                       + str(i) + ".dat") == 0:
+        # if filesize is zero, go to next file until one with content is found
+        try:
+            while os.path.getsize(thermistor_path + "/Longueuil.dat"
+                                  + str(i) + ".dat") == 0:
+                i += 1
+        # if no file with content is found, exit and put new next.i os that
+        # we don't loop over the same files again
+        except:
+            with open(path + "/downloads/Twater/next.i", "w") as f:
+                f.write(str(i))
+            f.close()
+            sys.exit("No additional temperature data found.")
+    else:
+        try:
+            da_update = read_thermistor_new(thermistor_path + "/Longueuil.dat"
+                                            + str(i) + ".dat")
+        except:
+            sys.exit("No additional temperature data found.")
+        i += 1
     # add new data until the most recent file
     while os.path.isfile(thermistor_path + "/Longueuil.dat" + str(i) + ".dat"):
         try:
@@ -78,8 +93,10 @@ if tds > 0:
         except:
             # if there is an error of some sort, we will add a NaN to the
             # time series
-            tmp["Date"] = tmp["Date"] + np.timedelta64(1, "h")
-            tmp["T"] = np.nan
+            tmp = xr.Dataset()
+            tmp["Date"] = da_update["Date"][-60::] + np.timedelta64(1, "h")
+            tmp = tmp.set_coords("Date")
+            tmp["T"] = ("Date", np.zeros(60) + np.nan)
         # do not add data from today
         if tmp.Date.isel(Date=-1) <= yesterday:
             da_update = xr.concat((da_update, tmp), dim="Date",

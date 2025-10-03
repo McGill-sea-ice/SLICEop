@@ -65,7 +65,7 @@ if [[ `uname -a` == *${requiredhost}* ]]; then
     updated=$(cat ${local_path}/downloads/Twater/updated)
 else
     printf "\nHost is not $requiredhost, cannot access daily water"\
-        " temperature!\n"
+        " temperature.\n"
 fi
 # plot time series
 printf "\nPlotting water temperature.\n"
