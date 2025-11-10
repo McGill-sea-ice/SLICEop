@@ -18,6 +18,11 @@ else
   local_path=$(echo $SLICEOP_PATH)
 fi
 
+website=$(cat ${local_path}/echart/website)
+if [[ ${website} == True ]]; then
+    web_path=/aos/home/jrieck/public_html
+fi
+
 # set 'requiredhost' because the daily water temperature data is only available
 # on 'crunch'
 requiredhost=$(echo $SLICEOP_TWATER_HOST)
@@ -67,18 +72,32 @@ else
     printf "\nHost is not $requiredhost, cannot access daily water"\
         " temperature.\n"
 fi
-# plot time series
-printf "\nPlotting water temperature.\n"
-python ${local_path}/auto/daily_plots.py
-
 # download the latest MODIS stellite image of the Montreal region from NASA
 # worldview
 printf "\nDownloading latest MODIS image:\n"
 python ${local_path}/downloads/daily_MODIS.py
 
+# download the latest Sentinel2 stellite image of the Montreal region from
+# Copernicus
+printf "\nDownloading latest Sentinel2 image:\n"
+python ${local_path}/downloads/daily_sentinel.py
+
+# plots
+printf "\nPlotting daily plots.\n"
+python ${local_path}/auto/daily_plots.py
+
 # update data that is used in echart
 printf "\nPreparing data to be plotted in echart:\n"
 python ${local_path}/auto/daily_prepare_data_for_echart.py
+if [[ ${website} == True ]]; then
+    cp ${local_path}/echart/frozen.json ${web_path}/data/frozen.json
+    cp ${local_path}/echart/latest.json ${web_path}/data/latest.json
+    cp ${local_path}/echart/colormap.json ${web_path}/data/colormap.json
+    cp ${local_path}/echart/fuds.json ${web_path}/data/fuds.json
+    cp ${local_path}/echart/sliceop_data.json ${web_path}/data/sliceop_data.json
+    cp ${local_path}/echart/worldview.dot.png ${web_path}/images/worldview.dot.png
+    cp ${local_path}/echart/sentinel2.dot.png ${web_path}/images/sentinel2.dot.png
+fi
 
 echo " "
 echo "-----------------------------------"

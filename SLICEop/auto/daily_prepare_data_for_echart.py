@@ -98,14 +98,14 @@ else:
 monthlyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                               + "FUDmonthly").to_xarray()
 try:
-    weeklyForecast = pd.read_csv(path + "/auto/" + str(year)
+    weeklyForecast = pd.read_csv(path + "/auto/" + str(tyear)
                                  + "FUDweekly").to_xarray()
 except:
     weeklyForecast = monthlyForecast
 
 # get the dates of the latest weekly and monthly forecast
 latestWeekly = weeklyForecast.time[-1].values
-latestMonthly = weeklyForecast.time[-1].values
+latestMonthly = monthlyForecast.time[-1].values
 # the last weekly forecast was made after the last monthly forecast, the
 # weekly forecast is the used
 if (np.datetime64(str(latestWeekly)) >= np.datetime64(str(latestMonthly))):
@@ -146,9 +146,6 @@ sliceop_data = {}
 # add the time axis
 sliceop_data['date'] = [str(climtime[i])[5:10]
                         for i in np.arange(0, len(climtime))]
-# add labels for each "year", e.g. "1992/1993" etc
-sliceop_data['years'] = [str(i) + "/" + str(i + 1)
-                         for i in np.arange(1992, thisyear)]
 # add climatology
 sliceop_data['clim'] = list(tw_clim)
 #sliceop_data['clim'] = [[sliceop_data['date'][i], sliceop_data['clim'][i]] for i in range(0, len(sliceop_data['clim']))]
@@ -169,6 +166,10 @@ if thismonth > 6:
     tyear = thisyear + 1
 else:
     tyear = thisyear
+
+# add labels for each "year", e.g. "1992/1993" etc
+sliceop_data['years'] = [str(i) + "/" + str(i + 1)
+                         for i in np.arange(1992, tyear)]
 # define range to read colors from colormap in the range (0.2, 0.8), avoiding
 # values too close to 0 or 1 that would result in very light or dark colors and
 # thus not be visible on the graph (depending on light- or dark-mode)
@@ -203,14 +204,14 @@ for y in np.arange(ymin, tyear):
         # add missing values for future dates
         missing = 365 - len(tw_out)
         sliceop_data[str(y) + "/" + str(y + 1)] = list(
-            list(tw_out) + [np.nan] * missing
+            [x if ~np.isnan(x) else "null" for x in list(tw_out)] + ["null"] * missing
             )
         #sliceop_data[str(y) + "/" + str(y + 1)] = [[sliceop_data['date'][i], sliceop_data[str(y) + "/" + str(y + 1)][i]]
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # if we are in past seasons, add the preprocessed data to dataset
     else:
         tw_out = tw.T_no_offset.sel(Date=ctime).values
-        sliceop_data[str(y) + "/" + str(y + 1)] = list(tw_out)
+        sliceop_data[str(y) + "/" + str(y + 1)] = [x if ~np.isnan(x) else "null" for x in list(tw_out)]
         #sliceop_data[str(y) + "/" + str(y + 1)] = [[sliceop_data['date'][i], sliceop_data[str(y) + "/" + str(y + 1)][i]]
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # add either the observed or forecasted freeze-up date to the
@@ -249,8 +250,8 @@ with open(path + '/echart/latest.json', 'w') as fp:
     json.dump(latest, fp)
 
 if frozen:
-    with open(path + '/echart/frozen.js', 'w') as fp:
-        fp.write("frozen=true")
+    with open(path + '/echart/frozen.json', 'w') as fp:
+        json.dump(frozen, fp)
 else:
-    with open(path + '/echart/frozen.js', 'w') as fp:
-        fp.write("frozen=false")
+    with open(path + '/echart/frozen.json', 'w') as fp:
+        json.dump(frozen, fp)

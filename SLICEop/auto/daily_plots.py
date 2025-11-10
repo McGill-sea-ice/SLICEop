@@ -237,3 +237,40 @@ for l in ["fr_CA", "en_CA"]:
     plt.legend()
     plt.subplots_adjust(left=0.15, bottom=0.2, right=0.9)
     plt.savefig(path + "/auto/Twater_" + l[0:2] +".png", dpi=300)
+
+# add a red dot at the Longueuil water treatment plant to the
+# NASA worldview image
+img = plt.imread(path + "/downloads/MODIS/worldview.jpg")
+dpi = 80
+height, width, nbands = img.shape
+figsize = width / float(dpi), height / float(dpi)
+fig = plt.figure(figsize=figsize)
+ax = fig.add_axes([0, 0, 1, 1])
+ax.axis('off')
+ax.imshow(img, interpolation='nearest')
+plt.plot(650, 306, marker="o", markersize=16, color="firebrick")
+fig.savefig(path + "/echart/worldview.dot.png", dpi=dpi, transparent=True)
+# add a red dot at the Longueuil water treatment plant to the
+# SENTINEL image as well as the date
+img = plt.imread(path + "/downloads/sentinel/sentinel2.png")
+if os.path.isfile(path + "/downloads/sentinel/sentinel_date"):
+    with open(path + "/downloads/sentinel/sentinel_date", "r") as f:
+        sentinel_date = f.read()
+    f.close()
+else:
+    sentinel_date = None
+dpi = 80
+height, width, nbands = img.shape
+figsize = width / float(dpi), height / float(dpi)
+fig = plt.figure(figsize=figsize)
+ax = fig.add_axes([0, 0, 1, 1])
+ax.axis('off')
+ax.imshow(img, interpolation='nearest')
+if np.mean(img) > 0.99:
+    plt.text(width/2, height/2, "No current image available", ha="center", va="center", fontweight="bold", fontsize=32, color="#4f4f4f")
+else:
+    plt.plot(1510, 690, marker="o", markersize=70, color="firebrick")
+    if sentinel_date != None:
+        ax.text(width-10, height-10, sentinel_date[0:10], bbox={"facecolor": "snow", "edgecolor": "dimgray", "alpha": 0.6},
+                ha="right", va="bottom", fontsize=70, fontweight="bold")
+fig.savefig(path + "/echart/sentinel2.dot.png", dpi=dpi, transparent=True)
