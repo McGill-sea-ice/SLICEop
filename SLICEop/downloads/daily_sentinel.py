@@ -62,7 +62,7 @@ request_true_color = sh.SentinelHubRequest(
                 "s2l2a", service_url=config.sh_base_url
             ),
             time_interval=(t_start, t_end),
-            other_args={"dataFilter": {"maxCloudCoverage": 50}}
+            other_args={"dataFilter": {"maxCloudCoverage": 75}}
         )
     ],
     responses=[

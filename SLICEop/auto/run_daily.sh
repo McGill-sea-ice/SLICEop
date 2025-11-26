@@ -20,7 +20,7 @@ fi
 
 website=$(cat ${local_path}/echart/website)
 if [[ ${website} == True ]]; then
-    web_path=/aos/home/jrieck/public_html
+    web_path=/storage2/tremblay-website/public_html
 fi
 
 # set 'requiredhost' because the daily water temperature data is only available
@@ -90,10 +90,10 @@ python ${local_path}/auto/daily_plots.py
 printf "\nPreparing data to be plotted in echart:\n"
 python ${local_path}/auto/daily_prepare_data_for_echart.py
 if [[ ${website} == True ]]; then
-    cp ${local_path}/echart/frozen.json ${web_path}/data/frozen.json
-    cp ${local_path}/echart/latest.json ${web_path}/data/latest.json
-    cp ${local_path}/echart/colormap.json ${web_path}/data/colormap.json
-    cp ${local_path}/echart/fuds.json ${web_path}/data/fuds.json
+    cp ${local_path}/echart/frozen.json ${web_path}/data/sliceop_frozen.json
+    cp ${local_path}/echart/latest.json ${web_path}/data/sliceop_latest.json
+    cp ${local_path}/echart/colormap.json ${web_path}/data/sliceop_colormap.json
+    cp ${local_path}/echart/fuds.json ${web_path}/data/sliceop_fuds.json
     cp ${local_path}/echart/sliceop_data.json ${web_path}/data/sliceop_data.json
     cp ${local_path}/echart/worldview.dot.png ${web_path}/images/worldview.dot.png
     cp ${local_path}/echart/sentinel2.dot.png ${web_path}/images/sentinel2.dot.png

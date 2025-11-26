@@ -27,7 +27,8 @@ today = now.day
 ymin = 1992
 
 # define which colormap to use in echart
-cmap = cmo.thermal
+cmapC = cmo.thermal
+cmapR = plt.cm.tab10
 
 # load preprocessed data
 tw = xr.open_dataset(
@@ -159,6 +160,8 @@ sliceop_data['clim+std'] = list(tw_climmax - tw_climmin)
 #sliceop_data['clim+std'] = [[sliceop_data['date'][i], sliceop_data['clim+std'][i]] for i in range(0, len(sliceop_data['clim']))]
 # define dictionaries to contain the RGB colors and the freeze-up dates
 colormap = {}
+colormap["cmapC"] = {}
+colormap["cmapR"] = {}
 fuds = {}
 # depending on the month we are in, a different year will be needed to define
 # the colormap
@@ -224,8 +227,11 @@ for y in np.arange(ymin, tyear):
     else:
         fuds[str(y) + "/" + str(y+1)] = str(fud.FUD.values[y - ymin])[5:10]
     # add the colors from cmocean colormap to the color data
-    colormap[str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
+    colormap["cmapC"][str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
         int(cmap(cpos[y-ymin])[i] * 255) for i in [0, 1, 2]
+        ])
+    colormap["cmapR"][str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
+        int(cmapR(np.linspace(0, 1, 10)[(y-ymin)%10])[i] * 255) for i in [0, 1, 2]
         ])
 # add climatological freeze-up date
 fudoys = np.array([
