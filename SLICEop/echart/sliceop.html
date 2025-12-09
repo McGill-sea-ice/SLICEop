@@ -1,247 +1,644 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>ECharts</title>
-    <!-- Include the ECharts file you just downloaded -->
-    <script src="echarts.js"></script>
-  </head>
-  <body>
-    <style>
-        #main,
-        html,
-        body {
-          width: 99%;
-        }
-        #main {
-          height: 820px;
-        }
-    </style>
-    <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="main"></div>
-    <!-- The following need to be replaced by actually loading json files -->
-    <script src="sliceop_data.js"></script>
-    <script src="fuds.js"></script>
-    <script src="colormap.js"></script>
-    <script src="frozen.js"></script>
-    <script type="text/javascript">
-      // Initialize the echarts instance based on the prepared dom
-      var myChart = echarts.init(document.getElementById('main'));
-            window.addEventListener('resize', function() {
-            myChart.resize();
-            });
-      var option;
-      var seriesData = datain.years.map(name => {
-          return {
-              name: name,
-              type: 'line',
-              triggerLineEvent: true,
-              emphasis: { focus: 'series' },
-              //symbol: 'none',
-              z: 2,
-              data: datain[name],
-              color: color[name],
-              markLine : {
-                  silent: true,
-                  symbol: ['none', 'none'],
-                  label: {
-                      position: 'end'
-                  },
-                  data : [{
-                      xAxis : fud[name],
-                      label: {
-                          color: color[name],
-                          backgroundColor: 'rgba(210,210,210,0.3)',
-                          borderColor: 'rgba(110,110,110,0.3)',
-                          rotate: 90,
-                          distance: 31,
-                          formatter: name
-                      },
-                  }]
-              }
-          }
-      })
-      legend = datain.years
-      legend = legend.concat(["clim"])
-      let legendSelect = {};
-      for (let i = 0; i <= datain.years.length - 2; i++) {
-          legendSelect[datain.years[i]] = false;
-      }
+	<head>
+		<title>McGill Sea Ice</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="icon" href="data:image/png;base64,iVBORw0KGgo=">
+		<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+		<script src="assets/js/echarts.js"></script>
+	</head>
+	<body class="is-preload">
 
-      seriesData = seriesData.concat([{
-          name: 'clim',
-          type: 'line',
-          emphasis: { focus: 'none' },
-          data: datain['clim'],
-          symbol: 'none',
-          color: '#000000',
-          lineStyle: {
-              normal: {
-                  width: 4
-              }
-          },
-          z: 1,
-          markLine : {
-              silent: true,
-              symbol: ['none', 'none'],
-              label: {
-                  position: 'middle',
-                  fontWeight: 'bold'
-              },
-              data : [{
-                  xAxis : fud['clim'],
-                  label: {
-                      formatter: 'average freeze-up date'
-                  },
-              }],
-              lineStyle: {
-                  normal: {
-                      width: 2
-                  }
-              }
-          }
-      }])
-      seriesData = seriesData.concat([{
-          name: 'min',
-          type: 'line',
-          stack: 'confidence-band',
-          silent: true,
-          emphasis: { focus: 'none' },
-          data: datain['clim-std'],
-          lineStyle: {
-            opacity: 0
-          },
-          symbol: 'none',
-          z: 1,
-          tooltip: {show: false}
-      }])
-      seriesData = seriesData.concat([{
-          name: 'max',
-          type: 'line',
-          stack: 'confidence-band',
-          silent: true,
-          emphasis: { focus: 'none' },
-          data: datain['clim+std'],
-          lineStyle: {
-            opacity: 0
-          },
-          areaStyle: {
-            color: '#ccc'
-          },
-          symbol: 'none',
-          z: 1,
-          tooltip: {show: false}
-      }])
-      if (!frozen) {
-          seriesData = seriesData.concat([{
-              name: 'forecast',
-              type: 'line',
-              symbol: 'none',
-              lineStyle: {
-                opacity: 0
-              },
-              z: 2,
-              data: datain[datain.years.slice(-1)],
-              color: color[datain.years.slice(-1)],
-              markLine : {
-                  silent: true,
-                  symbol: ['none', 'none'],
-                  label: {
-                      position: 'insideEndBottom'
-                  },
-                  lineStyle: {
-                    opacity: 1
-                  },
-                  data : [{
-                      xAxis : fud[datain.years.slice(-1)],
-                      label: {
-                          color: color[datain.years.slice(-1)],
-                          formatter: 'forecast'
-                      },
-                  }]
-                }
-            }])
-      }
-      var xRange = []
-      for (let i = 0; i <= 28; i += 2) {
-          xRange.push(i);
-      }
+		<!-- Header -->
+			<section id="header">
+				<header>
+					<span class="image avatar"><img src="images/avatar.png" alt="" /></span>
+					<h1 id="logo"><a href="https://web.meteo.mcgill.ca/tremblay/">McGill Sea Ice</a></h1>
+					<p id="logo"><a href="https://www.mcgill.ca/meteo/" target="_blank">Department of<br />Atmospheric and Oceanic Sciences</a></p>
+				</header>
+				<nav id="nav">
+					<ul>
+						<li><a href="sliceop" class="active">SLICEop</a></li>
+						<li><a href="mistissini">Lake Mistissini Ice Thickness</a></li>
+						<li><a href="nain">Nain Ice Thickness</a></li>
+						<li><a href="gault">Gault Ice Thickness</a></li>
+					</ul>
+				</nav>
+				<footer>
+					<ul class="icons">
+						<li><a href="https://github.com/McGill-sea-ice" class="icon brands fa-github"><span class="label">Github</span></a></li>
+						<li><a href="mailto:bruno.tremblay@mcgill.ca" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+				</footer>
+			</section>
 
-        option = {
-              title: {
-                  text: 'Water temperature in Longueuil',
-                  left: 'center',
-                  textStyle: {fontSize: 28},
-              },
-              tooltip: {
-                  trigger: 'axis',
-                  axisPointer: {
-                      type: 'cross',
-                  },
-                  valueFormatter: value => `${value.toFixed(2)} °C`
-                  },
-              legend: {
-                  orient: 'vertical',
-                  right: 5,
-                  type: 'scroll',
-                  top: 'center',
-                  data: legend,
-                  selected: legendSelect
-          },
-          grid: {
-              left: '3%',
-              right: '10%',
-              bottom: '3%',
-              top: '15%',
-              containLabel: true,
-          },
-          toolbox: {
-              feature: {
-                  saveAsImage: {}
-              }
-          },
-          xAxis: {
-              type: 'category',
-              boundaryGap: true,
-              axisLine: {onZero: false},
-              axisLabel: {
-                  rotate: 45,
-                  interval: 8,
-              },
-              data: datain.date,
-          },
-          yAxis: {
-              type: 'value',
-              min: -0.3,
-              max: 28,
-              axisLabel: {
-                  formatter: '{value} °C',
-                  customValues: xRange
-              },
-              axisTick: {
-                  customValues: xRange
-              }
-          },
-          series: seriesData
-      };
+		<!-- Wrapper -->
+			<div id="wrapper">
 
-      myChart.setOption(option);
+				<!-- Main -->
+					<div id="main">
+                                                <div class="image main" data-position="center">
+							<img src="images/banner.png" alt="" />
+						</div>
+						<!-- One -->
+							<section id="sliceop">
+								<div class="container">
+									<header class="major">
+										<h2>SLICEop</h2>
+										<p>Operational St. Lawrence freeze-up forecast</p>
+									</header>
+								</div>
+								<div class="fud">
+									<div id="freezetext"></div>
+									<div class="fd" id="freezedate"></div>
+									<div class="issued" id="lastforecast"></div>
+								</div>
+								<div class="echarttitle">
+									<p>Water temperature in Longueuil</p>
+								</div>
+								<div id="echarts"></div>
+								<div class="container">
+									<div class="features">
+										<article>
+											<div class="imagewithcaption">
+												<a href="https://browser.dataspace.copernicus.eu/?zoom=12&lat=45.49913&lng=-73.63415&themeId=DEFAULT-THEME&visualizationUrl=U2FsdGVkX19z5wOdLuZ1U0I9HiOmMMTaepnVzQyCvLaTPJPS1Pukh3iAuAyw1746v5XyeWcDjRn5g5vlGa7zJR5uviU6Plht2sC%2Ffnqj6wwYnZSeAsay7UaoZdCMzK7Y&datasetId=S2_L2A_CDAS&layerId=1_TRUE_COLOR&demSource3D=%22MAPZEN%22&cloudCoverage=80&dateMode=SINGLE" target="_blank" class="image">
+													<img src="images/sentinel2.dot.png"/>
+												</a>
+												<div class="inner">
+													<h4>Satellite image of the Montreal area from Copernicus/Sentinel2</h4>
+													<p>Most recent available image with less than 80% cloud cover. The red dot shows the Longueuil water temperature measurement site.</p>
+												</div>
+											</div>
+											<div class="imagewithcaption">
+												<a href="https://e-navigation.canada.ca/topics/cameras/camera-en?camfile=PontJacquesCartier" target="_blank" class="image">
+													<video width="100%" autoplay loop src="https://e-nav.ccg-gcc.gc.ca/nvss-svsn/sequences/PontJacquesCartier.mp4"></video>
+												</a>
+												<div class="inner">
+													<h4>Webcam located near Longueuil</h4>
+													<p>Close to the red dot on the satellite image.</p>
+												</div>
+											</div>
+											<p></p>
+											<p>A detailed description can be found on <a href="https://github.com/McGill-sea-ice/SLICEop" target="_blank">github</a>.<br />This project is the collaborative work of Amélie Bouchat, Bruno Tremblay, Jan Rieck, Alexis Dorais, Philippe Lamontange and Jean-François Lemieux.</p>
+											<p></p>
+											<p>sponsored by</p>
+											<div class="sponsors">
+												<a href="https://nrc.canada.ca/en/" target="_blank" class="image">
+													<img src="images/nrc.png" alt="" />
+												</a>
+											</div>
+											<div class="sponsors">
+												<a href="https://www.canada.ca/en/environment-climate-change.html" target="_blank" class="image">
+													<img src="images/eccc.png" alt="" />
+												</a>
+											</div>
+											<div class="sponsors">
+												<a href="https://www.mitacs.ca" target="_blank" class="image">
+													<img src="images/mitacs.png" alt="" />
+												</a>
+											</div>
+											<div class="sponsors_s">
+												<a href="https://meopar.ca/" target="_blank" class="image">
+													<img src="images/meopar.png" alt="" />
+												</a>
+											</div>
+											<div class="sponsors">
+												<a href="https://ivado.ca/en/" target="_blank" class="image">
+													<img src="images/ivado.png" alt="" />
+												</a>
+											</div>
+										</article>
+									</div>
+								</div>
+							</section>
 
-          myChart.on('click', function(params) {
-              var sname = params.seriesName;
-              var xpos = params.dataIndex;
-              var date=datain.date[xpos];
-              if (xpos < 184) {
-                  var yyyy = sname.substring(0,4)
-              } else {
-                  var yyyy = sname.substring(5,9)
-              }
-              if (xpos < 366) {
-                            window.open(
-                              'https://worldview.earthdata.nasa.gov/?v=-74.2417,45.1855,-73.261,45.8297&t=' + encodeURIComponent(yyyy) + '-' + encodeURIComponent(date) + '-T15%3A10%3A15Z'
-                          )}
-           });
+					</div>
 
-    </script>
-  </body>
+					<script type="text/javascript">
+					    var frozen;
+					    var ftext;
+						var latest;
+						$.get('data/sliceop_latest.json', {},
+							function(response) {
+            					latest = response;
+								$.get('data/sliceop_frozen.json', {},
+									function(response) {
+										frozen = response;
+										if (!frozen) {
+						  					ftext="The St. Lawrence near Montreal is forecasted to freeze on"
+					  					} else {
+						  					ftext="The St. Lawrence near Montreal froze on"
+					  					}
+					  					document.getElementById('freezetext').innerHTML=ftext;
+					  					document.getElementById('freezedate').innerHTML=latest.latestForecast;
+					  					document.getElementById('lastforecast').innerHTML=`Last forecast issued on ${latest.latestForecastIssued}`;
+									}
+								);
+							}
+						);
+					</script>
+
+					<script type="text/javascript">
+						var frozen;
+						var color;
+						var fud;
+						var datain;
+						var cm="cont";
+						$.when(
+							$.get('data/sliceop_frozen.json', {},
+								function(response) {
+									frozen = response;
+								}
+							),
+							$.get('data/sliceop_colormap.json', {},
+								function(response){
+									color = response;
+								}
+							),
+							$.get('data/sliceop_fuds.json', {},
+								function(response){
+									fud = response;
+								}
+							),
+							$.get('data/sliceop_data.json', {},
+								function(response){
+									//var temp = JSON.stringify(response).replace(/null/g, 0)
+									//datain = JSON.parse(temp);
+									datain = response;
+								}
+							)
+						).then(function() {
+							initEchart();
+						});
+					  	// Initialize the echarts instance based on the prepared dom
+						function initEchart() {
+							var myChart = echarts.init(document.getElementById('echarts'));
+							var cwidth = myChart._api.getWidth();
+							if (cwidth<520) {
+								var xbutton = 66;
+								var xinterval = 32;
+							} else if (cwidth>=520 & cwidth<1020){
+								var xbutton = cwidth-160;
+								var xinterval = 16;
+							} else {
+								var xbutton = cwidth-160;
+								var xinterval = 8;
+							}
+							if (cwidth<640) {
+								var legorient = 'horizontal';
+								var legright = null;
+						    		var legleft = 15;
+								var legtop = null;
+								var legbottom = 0;
+								var gridbottom = "5%";
+								var gridright = "5%";
+							} else {
+								var legorient = 'vertical';
+								var legright = 5;
+						    		var legleft = null;
+								var legtop = 40;
+								var legbottom = null;
+								var gridbottom = "3%";
+								var gridright = "15%";
+							}
+							window.addEventListener('resize', function() {
+								myChart.resize();
+								cwidth = myChart._api.getWidth();
+								if (cwidth<520) {
+									var xbutton = 66;
+									var xinterval = 32;
+								} else if (cwidth>=520 & cwidth<1020){
+									var xbutton = cwidth-160;
+									var xinterval = 16;
+								} else {
+									var xbutton = cwidth-160;
+									var xinterval = 8;
+								}
+								if (cwidth<640) {
+									var legorient = 'horizontal';
+									var legright = null;
+						    			var legleft = 15;
+									var legtop = null;
+									var legbottom = 0;
+									var gridbottom = "5%";
+									var gridright = "5%";
+								} else {
+									var legorient = 'vertical';
+									var legright = 5;
+						    			var legleft = null;
+									var legtop = 40;
+									var legbottom = null;
+									var gridbottom = "3%";
+									var gridright = "15%";
+								}
+								myChart.setOption({
+									series:{
+                                        					name: "dummybtn",
+                                        					markPoint: {
+			    								tooltip: { show: false },
+			    								label: {
+			      									show: true,
+			      									formatter: '{b}',
+			      									color: 'black',
+			      									fontSize: 14,
+													borderColor: '#999',
+          											borderWidth: 1,
+          											borderRadius: 2,
+          											backgroundColor: '#fff',
+          											padding: [4, 5],
+			    								},
+			    								data: [{
+			      									name: 'change colormap',
+			      									value: '-',
+			      									symbol: 'circle',
+			      									itemStyle: { color: 'transparent' },
+			      									x: xbutton,
+			      									y: 15,
+			    								}],
+			  							},
+                                    					},
+									legend: {
+										orient: legorient,
+										right: legright,
+						    				left: legleft,
+										top: legtop,
+										bottom: legbottom,
+									},
+									grid: {
+										right: gridright,
+										bottom: gridbottom,
+									},
+									xAxis: {
+										axisLabel: {
+											rotate: 45,
+											interval: xinterval,
+										},
+									},
+                                				})
+							});
+							var option;
+							var seriesData = datain.years.map(name => {
+								return {
+									name: name,
+									type: 'line',
+									triggerLineEvent: true,
+									emphasis: { focus: 'none' },
+									z: 2,
+									data: datain[name],
+									color: color.cmapC[name],
+									markLine : {
+										silent: true,
+										symbol: ['none', 'none'],
+										label: {
+											position: 'end'
+										},
+										data : [{
+											xAxis : fud[name],
+											label: {
+												color: color.cmapC[name],
+												backgroundColor: 'rgba(210,210,210,0.3)',
+												borderColor: 'rgba(110,110,110,0.3)',
+												rotate: 90,
+												distance: 31,
+												formatter: name
+											},
+										}]
+									}
+								}
+							})
+							legend = datain.years
+							legend = legend.concat(["clim"])
+							let legendSelect = {};
+							for (let i = 0; i <= datain.years.length - 2; i++) {
+								legendSelect[datain.years[i]] = false;
+							}
+							seriesData = seriesData.concat([{
+								name: 'clim',
+								type: 'line',
+								emphasis: { focus: 'none' },
+								data: datain['clim'],
+								symbol: 'none',
+								color: '#000000',
+								lineStyle: {
+									width: 4
+								},
+								z: 1,
+								markLine : {
+									silent: true,
+									symbol: ['none', 'none'],
+									label: {
+										position: 'middle',
+										fontWeight: 'bold'
+									},
+									data : [{
+										xAxis : fud['clim'],
+										label: {
+											formatter: 'average freeze-up date'
+										},
+									}],
+									lineStyle: {
+										width: 2
+									}
+								}
+							}])
+							seriesData = seriesData.concat([{
+								name: 'min',
+								type: 'line',
+								stack: 'confidence-band',
+								silent: true,
+								emphasis: { focus: 'none' },
+								data: datain['clim-std'],
+								lineStyle: {
+									opacity: 0
+								},
+								symbol: 'none',
+								z: 1,
+								tooltip: {show: false}
+							}])
+							seriesData = seriesData.concat([{
+					  			name: 'max',
+					  			type: 'line',
+					  			stack: 'confidence-band',
+					  			silent: true,
+					  			emphasis: { focus: 'none' },
+					  			data: datain['clim+std'],
+					  			lineStyle: {
+									opacity: 0
+					  			},
+					  			areaStyle: {
+									color: '#ccc'
+					  			},
+					  			symbol: 'none',
+					  			z: 1,
+					  			tooltip: {show: false}
+							}])
+							if (!frozen) {
+								seriesData = seriesData.concat([{
+									name: 'forecast',
+									type: 'line',
+									symbol: 'none',
+									tooltip: {show: false},
+									lineStyle: {
+										opacity: 0
+									},
+									z: 2,
+									data: datain[datain.years.slice(-1)],
+									color: color.cmapC[datain.years.slice(-1)],
+									markLine : {
+										silent: true,
+										symbol: ['none', 'none'],
+										label: {
+											position: 'insideEndBottom'
+										},
+										lineStyle: {
+											opacity: 1
+										},
+										data : [{
+											xAxis : fud[datain.years.slice(-1)],
+											label: {
+												color: color.cmapC[datain.years.slice(-1)],
+												formatter: 'forecast'
+											},
+										}]
+									}
+								}])
+							}
+							seriesData = seriesData.concat({
+								        name: "dummybtn",
+								        type: 'line',
+								        triggerLineEvent: false,
+										show: false,
+								        data: "-",
+								        color: "black",
+										markPoint: {
+			    							tooltip: { show: false },
+			    							label: {
+			      								show: true,
+			      								formatter: '{b}',
+			      								color: 'black',
+			      								fontSize: 14,
+												borderColor: '#999',
+          										borderWidth: 1,
+          										borderRadius: 2,
+          										backgroundColor: '#fff',
+          										padding: [4, 5],
+			    							},
+			    							data: [{
+			      								name: 'change colormap',
+			      								value: '-',
+			      								symbol: 'circle',
+			      								itemStyle: { color: 'transparent' },
+			      								x: xbutton,
+			      								y: 15,
+			    							}],
+			  						},
+							});
+							var xRange = []
+							for (let i = 0; i <= 28; i += 2) {
+					  			xRange.push(i);
+							}
+							option = {
+								tooltip: {
+									trigger: 'axis',
+									axisPointer: {
+										type: 'cross',
+									},
+									valueFormatter: value => `${parseFloat(value).toFixed(2)} °C`
+								},
+								legend: {
+									orient: legorient,
+									right: legright,
+									left: legleft,
+									type: 'scroll',
+									top: legtop,
+									bottom: legbottom,
+									data: legend.reverse(),
+									selected: legendSelect
+								},
+								grid: {
+									left: '3%',
+									right: gridright,
+									bottom: gridbottom,
+									top: '15%',
+									containLabel: true,
+								},
+								toolbox: {
+									feature: {
+										dataZoom: {
+        										yAxisIndex: 'none'
+      										},
+										saveAsImage: {}
+									}
+								},
+								xAxis: {
+									type: 'category',
+									boundaryGap: true,
+									axisLine: {onZero: false},
+									axisLabel: {
+										rotate: 45,
+										interval: xinterval,
+									},
+									data: datain.date,
+								},
+								yAxis: {
+									type: 'value',
+									min: -0.3,
+									max: 28,
+									axisLabel: {
+										formatter: '{value} °C',
+										customValues: xRange
+									},
+									axisTick: {
+										customValues: xRange
+									}
+								},
+								series: seriesData
+							};
+
+							myChart.setOption(option);
+
+							myChart.on('click', function(params) {
+								if (params.componentType !== 'markPoint'){
+									var sname = params.seriesName;
+									var xpos = params.dataIndex;
+									var date=datain.date[xpos];
+									if (xpos < 184) {
+										var yyyy = sname.substring(0,4)
+									} else {
+										var yyyy = sname.substring(5,9)
+									}
+									if (xpos < 366) {
+										window.open(
+											'https://worldview.earthdata.nasa.gov/?v=-74.2417,45.1855,-73.261,45.8297&t=' + encodeURIComponent(yyyy) + '-' + encodeURIComponent(date) + '-T15%3A10%3A15Z'
+										)
+									}
+								} else {
+									if (cm === "cont") {
+										cm = "rand";
+										myChart.setOption({series: datain.years.map(name => {
+											return {
+												name: name,
+												color: color.cmapR[name],
+												markLine : {
+													silent: true,
+													symbol: ['none', 'none'],
+													label: {
+														position: 'end'
+													},
+													data : [{
+														xAxis : fud[name],
+														label: {
+															color: color.cmapR[name],
+															backgroundColor: 'rgba(210,210,210,0.3)',
+															borderColor: 'rgba(110,110,110,0.3)',
+															rotate: 90,
+															distance: 31,
+															formatter: name
+														},
+													}]
+												}
+											}
+										})})
+										myChart.setOption({series: [
+											{name: "forecast",
+											color: color.cmapR[datain.years.slice(-1)],
+											markLine : {
+												silent: true,
+												symbol: ['none', 'none'],
+												label: {
+													position: 'insideEndBottom'
+												},
+												lineStyle: {
+													opacity: 1
+												},
+												data : [{
+													xAxis : fud[datain.years.slice(-1)],
+													label: {
+														color: color.cmapR[datain.years.slice(-1)],
+														formatter: 'forecast'
+													},
+												}]
+											}}
+										]})
+									} else {
+										cm = "cont";
+										myChart.setOption({series: datain.years.map(name => {
+											return {
+												name: name,
+												color: color.cmapC[name],
+												markLine : {
+													silent: true,
+													symbol: ['none', 'none'],
+													label: {
+														position: 'end'
+													},
+													data : [{
+														xAxis : fud[name],
+														label: {
+															color: color.cmapC[name],
+															backgroundColor: 'rgba(210,210,210,0.3)',
+															borderColor: 'rgba(110,110,110,0.3)',
+															rotate: 90,
+															distance: 31,
+															formatter: name
+														},
+													}]
+												}
+											}
+										})})
+										myChart.setOption({series: [
+											{name: "forecast",
+											color: color.cmapC[datain.years.slice(-1)],
+											markLine : {
+												silent: true,
+												symbol: ['none', 'none'],
+												label: {
+													position: 'insideEndBottom'
+												},
+												lineStyle: {
+													opacity: 1
+												},
+												data : [{
+													xAxis : fud[datain.years.slice(-1)],
+													label: {
+														color: color.cmapC[datain.years.slice(-1)],
+														formatter: 'forecast'
+													},
+												}]
+											}}
+										]})
+									}
+								}
+							});
+						};
+					</script>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="container">
+							<ul class="copyright">
+								<li>&copy; McGill Sea Ice Lab. All rights reserved.</li><li>Design based on "Read Only" by <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
 </html>
