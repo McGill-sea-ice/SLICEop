@@ -99,5 +99,9 @@ if [[ ${website} == True ]]; then
     cp ${local_path}/echart/sentinel2.dot.png ${web_path}/images/sentinel2.dot.png
 fi
 
+# make a backup of the raw thermistor data
+if [[ `uname -a` == *${requiredhost}* ]]; then
+    rsync -auv /storage/thermistor/*.dat ${local_path}/downloads/Twater/raw/
+
 echo " "
 echo "-----------------------------------"

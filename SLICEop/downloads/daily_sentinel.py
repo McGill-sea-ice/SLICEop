@@ -62,7 +62,7 @@ request_true_color = sh.SentinelHubRequest(
                 "s2l2a", service_url=config.sh_base_url
             ),
             time_interval=(t_start, t_end),
-            other_args={"dataFilter": {"maxCloudCoverage": 75}}
+            other_args={"dataFilter": {"maxCloudCoverage": 80}}
         )
     ],
     responses=[
@@ -90,7 +90,7 @@ figsize = width / float(dpi), height / float(dpi)
 fig = plt.figure(figsize=figsize)
 ax = fig.add_axes([0, 0, 1, 1])
 ax.axis('off')
-ax.imshow(true_color_imgs/255*5, interpolation='nearest')
+ax.imshow(true_color_imgs/255*2, interpolation='nearest')
 plt.savefig(out_dir + 'sentinel2.png', dpi=dpi)
 
 date = [metadata["scenes"][i]["date"] for i in range(0, len(metadata["scenes"])) if "N0511_R054" in metadata["scenes"][i]["productId"]][0]

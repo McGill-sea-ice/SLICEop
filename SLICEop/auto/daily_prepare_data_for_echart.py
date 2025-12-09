@@ -228,7 +228,7 @@ for y in np.arange(ymin, tyear):
         fuds[str(y) + "/" + str(y+1)] = str(fud.FUD.values[y - ymin])[5:10]
     # add the colors from cmocean colormap to the color data
     colormap["cmapC"][str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
-        int(cmap(cpos[y-ymin])[i] * 255) for i in [0, 1, 2]
+        int(cmapC(cpos[y-ymin])[i] * 255) for i in [0, 1, 2]
         ])
     colormap["cmapR"][str(y) + "/" + str(y+1)] = '#%02x%02x%02x' % tuple([
         int(cmapR(np.linspace(0, 1, 10)[(y-ymin)%10])[i] * 255) for i in [0, 1, 2]
