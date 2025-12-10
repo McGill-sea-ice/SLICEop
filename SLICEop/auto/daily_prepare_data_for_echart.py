@@ -135,6 +135,12 @@ else:
                                    "%Y %j")
         )[0:10]
 
+# add observed freeze-up date to latest if frozen
+if frozen:
+    latest["fud"] = str(frozenDate)
+else:
+    latest["fud"] = "null"
+
 # use a random, non-leap year to create a time axis for the plot. only the
 # month and day will be used later, the year is unimportant
 climtime = pd.date_range(
