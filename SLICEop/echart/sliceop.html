@@ -133,12 +133,15 @@
 										frozen = response;
 										if (!frozen) {
 						  					ftext="The St. Lawrence near Montreal is forecasted to freeze on"
+											document.getElementById('freezetext').innerHTML=ftext;
+                                                                                	document.getElementById('freezedate').innerHTML=latest.latestForecast;
+                                                                                	document.getElementById('lastforecast').innerHTML=`Last forecast issued on ${latest.latestForecastIssued}`;
 					  					} else {
-						  					ftext="The St. Lawrence near Montreal froze on"
-					  					}
-					  					document.getElementById('freezetext').innerHTML=ftext;
-					  					document.getElementById('freezedate').innerHTML=latest.latestForecast;
-					  					document.getElementById('lastforecast').innerHTML=`Last forecast issued on ${latest.latestForecastIssued}`;
+						  					ftext="The St. Lawrence near Montreal started to freeze on"
+					  						document.getElementById('freezetext').innerHTML=ftext;
+                                                                                	document.getElementById('freezedate').innerHTML=latest.fud;
+											document.getElementById('lastforecast').innerHTML="Forecasting will resume next season.";
+										}
 									}
 								);
 							}
