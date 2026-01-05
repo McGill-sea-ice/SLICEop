@@ -549,27 +549,29 @@
 												}
 											}
 										})})
-										myChart.setOption({series: [
-											{name: "forecast",
-											color: color.cmapR[datain.years.slice(-1)],
-											markLine : {
-												silent: true,
-												symbol: ['none', 'none'],
-												label: {
-													position: 'insideEndBottom'
-												},
-												lineStyle: {
-													opacity: 1
-												},
-												data : [{
-													xAxis : fud[datain.years.slice(-1)],
+										if (!frozen) {
+											myChart.setOption({series: [
+												{name: "forecast",
+												color: color.cmapR[datain.years.slice(-1)],
+												markLine : {
+													silent: true,
+													symbol: ['none', 'none'],
 													label: {
-														color: color.cmapR[datain.years.slice(-1)],
-														formatter: 'forecast'
+														position: 'insideEndBottom'
 													},
-												}]
-											}}
-										]})
+													lineStyle: {
+														opacity: 1
+													},
+													data : [{
+														xAxis : fud[datain.years.slice(-1)],
+														label: {
+															color: color.cmapR[datain.years.slice(-1)],
+															formatter: 'forecast'
+														},
+													}]
+												}}
+											]})
+										}
 									} else {
 										cm = "cont";
 										myChart.setOption({series: datain.years.map(name => {
@@ -596,27 +598,29 @@
 												}
 											}
 										})})
-										myChart.setOption({series: [
-											{name: "forecast",
-											color: color.cmapC[datain.years.slice(-1)],
-											markLine : {
-												silent: true,
-												symbol: ['none', 'none'],
-												label: {
-													position: 'insideEndBottom'
-												},
-												lineStyle: {
-													opacity: 1
-												},
-												data : [{
-													xAxis : fud[datain.years.slice(-1)],
+										if (!frozen) {
+											myChart.setOption({series: [
+												{name: "forecast",
+												color: color.cmapC[datain.years.slice(-1)],
+												markLine : {
+													silent: true,
+													symbol: ['none', 'none'],
 													label: {
-														color: color.cmapC[datain.years.slice(-1)],
-														formatter: 'forecast'
+														position: 'insideEndBottom'
 													},
-												}]
-											}}
-										]})
+													lineStyle: {
+														opacity: 1
+													},
+													data : [{
+														xAxis : fud[datain.years.slice(-1)],
+														label: {
+															color: color.cmapC[datain.years.slice(-1)],
+															formatter: 'forecast'
+														},
+													}]
+												}}
+											]})
+										}
 									}
 								}
 							});
