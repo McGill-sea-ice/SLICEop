@@ -197,7 +197,7 @@ if os.environ["TEST"]=="True":
                           + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
-    else:
+    elif ((month == 5) | (month == 6)) :
         with open(path + "/auto/frozen", "r") as f:
             frozen = f.read()
         f.close()
@@ -210,6 +210,8 @@ if os.environ["TEST"]=="True":
             with open(path + "/auto/frozen", "w") as f:
                 f.write(str(frozen))
             f.close()
+        print("No additional data found to improve the forecast ")
+    else:
         print("No additional data found to improve the forecast ")
 else:
     # depending on the month try to download ERA5 if it should be available
@@ -279,7 +281,7 @@ else:
                         + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
-    else:
+    elif ((month == 5) | (month == 6)):
         # if in May or June, make sure to reset the variable `frozen` to `False`
         # in preparation for the next winter's forecast
         with open(path + "/auto/frozen", "r") as f:
@@ -294,6 +296,8 @@ else:
         with open(path + "/auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
+        print("No additional data found to improve the forecast ")
+    else:
         print("No additional data found to improve the forecast ")
 
 # save info on whether data was updated
