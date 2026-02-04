@@ -102,6 +102,7 @@ fi
 # make a backup of the raw thermistor data
 if [[ `uname -a` == *${requiredhost}* ]]; then
     rsync -auv /storage/thermistor/*.dat ${local_path}/downloads/Twater/raw/
+fi
 
 echo " "
 echo "-----------------------------------"
