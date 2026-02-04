@@ -206,8 +206,8 @@ elif month in ["01", "02", "03", "04"]:
         download_seas51(variables[0], month, year, out_dir + "SEAS51/", lats, lons)
         updatey = False
         print("ERA5 " + variables[0] + " not yet available, using SEAS5.1")
-else:
-    # if in May or June, make sure to reset the variable `frozen` to `False`
+elif month == "07":
+    # if in July, make sure to reset the variable `frozen` to `False`
     # in preparation for the next winter's forecast
     with open(path + "/auto/frozen", "r") as f:
         frozen = f.read()
@@ -221,6 +221,8 @@ else:
         with open(path + "/auto/frozen", "w") as f:
             f.write(str(frozen))
         f.close()
+    print("no forecast can be made before July")
+else:
     print("no forecast can be made before July")
 
 # save info on whether data was updated

@@ -281,8 +281,8 @@ else:
                         + year + months[0] + "_" + variables[0] +  ".partial.grib")
             except:
                 pass
-    elif ((month == 5) | (month == 6)):
-        # if in May or June, make sure to reset the variable `frozen` to `False`
+    elif month == "07":
+        # if in July, make sure to reset the variable `frozen` to `False`
         # in preparation for the next winter's forecast
         with open(path + "/auto/frozen", "r") as f:
             frozen = f.read()
