@@ -93,7 +93,7 @@ ax.axis('off')
 ax.imshow(true_color_imgs/255*2, interpolation='nearest')
 plt.savefig(out_dir + 'sentinel2.png', dpi=dpi)
 
-date = [metadata["scenes"][i]["date"] for i in range(0, len(metadata["scenes"])) if "N0511_R054" in metadata["scenes"][i]["productId"]][0]
+date = sorted([metadata["scenes"][i]["date"] for i in range(0, len(metadata["scenes"]))])[0]
 with open(out_dir + "sentinel_date", "w") as f:
     f.write(date[0:10])
 f.close()

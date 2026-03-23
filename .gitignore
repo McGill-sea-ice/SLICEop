@@ -3,3 +3,8 @@
 *.grib
 *.dat
 *.csv
+*.log
+SLICEop/auto/????FUDmonthly
+SLICEop/auto/????FUDweekly
+SLICEop/auto/*.png
+

@@ -155,15 +155,10 @@ sliceop_data['date'] = [str(climtime[i])[5:10]
                         for i in np.arange(0, len(climtime))]
 # add climatology
 sliceop_data['clim'] = list(tw_clim)
-#sliceop_data['clim'] = [[sliceop_data['date'][i], sliceop_data['clim'][i]] for i in range(0, len(sliceop_data['clim']))]
-#sliceop_data['clim-std'] = list(tw_clim - tw_climstd)
-#sliceop_data['clim+std'] = list(2 * tw_climstd)
 # add minimum
 sliceop_data['clim-std'] = list(tw_climmin)
 # add maximum - minimum (needed to plot the range between minimum and maximum)
 sliceop_data['clim+std'] = list(tw_climmax - tw_climmin)
-#sliceop_data['clim-std'] = [[sliceop_data['date'][i], sliceop_data['clim-std'][i]] for i in range(0, len(sliceop_data['clim']))]
-#sliceop_data['clim+std'] = [[sliceop_data['date'][i], sliceop_data['clim+std'][i]] for i in range(0, len(sliceop_data['clim']))]
 # define dictionaries to contain the RGB colors and the freeze-up dates
 colormap = {}
 colormap["cmapC"] = {}
@@ -215,11 +210,9 @@ for y in np.arange(ymin, tyear):
         sliceop_data[str(y) + "/" + str(y + 1)] = list(
             [x if ~np.isnan(x) else "null" for x in list(tw_out)] + ["null"] * missing
             )
-        #sliceop_data[str(y) + "/" + str(y + 1)] = [[sliceop_data['date'][i], sliceop_data[str(y) + "/" + str(y + 1)][i]]
-        #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # if we are in past seasons, add the preprocessed data to dataset
     else:
-        tw_out = tw.T_no_offset.sel(Date=ctime).values
+        tw_out = tw.T_no_offset.sel(Date=slice(str(ctime[0]), str(ctime[-1]))).values
         sliceop_data[str(y) + "/" + str(y + 1)] = [x if ~np.isnan(x) else "null" for x in list(tw_out)]
         #sliceop_data[str(y) + "/" + str(y + 1)] = [[sliceop_data['date'][i], sliceop_data[str(y) + "/" + str(y + 1)][i]]
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]

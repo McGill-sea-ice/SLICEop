@@ -100,6 +100,7 @@ if [[ ${website} == True ]]; then
 fi
 
 # make a backup of the raw thermistor data
+printf "\nCreating backup of raw thermistor data\n"
 if [[ `uname -a` == *${requiredhost}* ]]; then
     rsync -auv /storage/thermistor/*.dat ${local_path}/downloads/Twater/raw/
 fi
