@@ -30,7 +30,7 @@ else:
 
 # the "year" of the forecast remains the same even if we switch into the next
 # year
-if now.month < 7:
+if ((int(month)==7) & (int(day)<7)):
     year = f"{(now.year - 1):04d}"
 
 # define the limits of the time series to plot
@@ -39,6 +39,7 @@ if now.month < 7:
 yesterday = np.datetime64(
     year + "-" + month + "-" + day
     ) - np.timedelta64(1, "D")
+print(yesterday)
 # datetime64 of the start (July 1)
 start = np.datetime64(year + "-07-01")
 # load the time series of water temperature including the most recent and

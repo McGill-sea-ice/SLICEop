@@ -164,22 +164,16 @@ colormap = {}
 colormap["cmapC"] = {}
 colormap["cmapR"] = {}
 fuds = {}
-# depending on the month we are in, a different year will be needed to define
-# the colormap
-if thismonth > 6:
-    tyear = thisyear + 1
-else:
-    tyear = thisyear
 
 # add labels for each "year", e.g. "1992/1993" etc
 sliceop_data['years'] = [str(i) + "/" + str(i + 1)
-                         for i in np.arange(1992, tyear)]
+                         for i in np.arange(1992, tyear + 1)]
 # define range to read colors from colormap in the range (0.2, 0.8), avoiding
 # values too close to 0 or 1 that would result in very light or dark colors and
 # thus not be visible on the graph (depending on light- or dark-mode)
-cpos = np.linspace(0.2, 0.8, tyear - ymin)
+cpos = np.linspace(0.2, 0.8, tyear + 1 - ymin)
 # extract data for each season (Jul. 1 - Jun. 30)
-for y in np.arange(ymin, tyear):
+for y in np.arange(ymin, tyear + 1):
     year = str(y)
     # start one day later in leap years, i.e. keeping the delta t to the last
     # day of the year the same
@@ -199,7 +193,7 @@ for y in np.arange(ymin, tyear):
             )
     # if we are in the current season, remove the mean offset to make the
     # recent data comparable to preprocessed data from past seasons
-    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
+    if (y==tyear):
         # subtract the mean offset
         tw_out = (tw_up.T.sel(Date=slice(str(ctime[0]), str(ctime[-1])))
                   - tw.T_winter_offset.mean()).values
@@ -218,7 +212,7 @@ for y in np.arange(ymin, tyear):
         #                                           for i in range(0, len(sliceop_data[str(y) + "/" + str(y + 1)]))]
     # add either the observed or forecasted freeze-up date to the
     # time series of freeze-up dates
-    if (((y==thisyear) & (thismonth>6)) | ((y==thisyear-1) & (thismonth<=6))):
+    if (y==tyear):
         if not frozen:
             fuds[str(y) + "/" + str(y+1)] = latest["latestForecast"][5:10]
         else:

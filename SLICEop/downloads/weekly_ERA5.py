@@ -282,20 +282,6 @@ else:
             except:
                 pass
     elif month == "07":
-        # if in July, make sure to reset the variable `frozen` to `False`
-        # in preparation for the next winter's forecast
-        with open(path + "/auto/frozen", "r") as f:
-            frozen = f.read()
-        f.close()
-        if frozen == "True":
-            frozen = True
-        else:
-            frozen = False
-        if frozen:
-            frozen = False
-        with open(path + "/auto/frozen", "w") as f:
-            f.write(str(frozen))
-        f.close()
         print("No additional data found to improve the forecast ")
     else:
         print("No additional data found to improve the forecast ")

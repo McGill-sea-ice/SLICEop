@@ -106,6 +106,8 @@ Tw_no_offset[Tw_no_offset < 0] = 0
 Tw["T_processed"] = Tw_processed
 Tw["T_winter_offset"] = Tw_offset
 Tw["T_no_offset"] = Tw_no_offset
+# making sure we have a complete time dimension
+Tw = Tw.resample(Date="1D").mean()
 print("saving T_water")
 Tw.sel(Date=slice(None, year + "-06-30")).to_netcdf(path
     + "/prepro/Twater_Longueuil_preprocessed.nc")
@@ -207,6 +209,10 @@ monthly_predictors = monthly_predictors.sel(time=slice(start, end + 1))
 monthly_predictors["FUDoy"] = FUD.FUDoy.sel(time=slice(start, end + 1))
 monthly_predictors.drop_vars(["number", "surface"]).to_netcdf(
     path + "/prepro/monthly_predictors.nc")
+# set frozen to False to start new forecasting season
+with open(path + "/auto/frozen", "w") as f:
+    f.write(str("False"))
+f.close()
 # save information on whether the preprocessing was succesful or not
 with open(path + "/prepro/preproy", "w") as f:
     f.write(str("True"))

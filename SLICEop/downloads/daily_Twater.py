@@ -138,7 +138,8 @@ updated = xr.concat([ds_in,
     update_smooth.sortby("Date").resample(Date="1D").mean(dim="Date")],
     dim="Date", compat="override", coords="minimal")
 # make sure Date is in ascending order and there are no duplicate dates
-updated = updated.sortby("Date").drop_duplicates(dim="Date").compute()
+updated = updated.sortby("Date").drop_duplicates(dim="Date")
+updated = updated.resample(Date="1D").mean().compute()
 # save updated dataset
 ds_in.close()
 updated.to_netcdf(path + "/downloads/Twater/Twater_Longueuil_updated.nc",
