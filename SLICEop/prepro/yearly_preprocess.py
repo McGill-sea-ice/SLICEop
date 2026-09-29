@@ -97,7 +97,8 @@ for y in np.arange(y_min, y_max+1):
                           (Tw_offset.Date.dt.month <= 4))),
                          Tw_winter_mean.sel(Date=str(y) + "-01-15",
                                             method="nearest").values, Tw_offset)
-Tw_offset = Tw_offset.dropna(dim="Date").interp(Date=Tw_winter.Date)
+Tw_offset = Tw_offset.dropna(dim="Date").interp(Date=Tw_winter.Date,
+                                                kwargs={"fill_value": "extrapolate"})
 # remove the computed offest from the temperature
 Tw_no_offset = Tw_processed - Tw_offset
 # set negatives to zero

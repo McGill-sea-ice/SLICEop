@@ -94,9 +94,9 @@ else:
          & (monthlyForecast.number==0))
          ).mean().FUD.values
 # convert the latest forecasted dayofyear to a date
-if latestFUD < 182:
+if latestFUD > 365:
     latestForecast = "2002" + str(
-        datetime.datetime.strptime(str(year + 1) + " " + str(int(np.around(latestFUD))),
+        datetime.datetime.strptime(str(int(year) + 1) + " " + str(int(np.around(latestFUD-365))),
                                    "%Y %j")
         )[4:10]
 else:
