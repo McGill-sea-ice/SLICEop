@@ -83,6 +83,11 @@ request_true_color = sh.SentinelHubRequest(
 response = request_true_color.get_data()
 true_color_imgs = response[0]["default.png"]
 metadata = response[0]["userdata.json"]
+tmp_image = true_color_imgs/255
+if np.mean(tmp_image) > 0.2:
+    plot_image = tmp_image/np.mean(tmp_image)/1.5
+else:
+    plot_image = tmp_image/np.mean(tmp_image)/3
 
 dpi = 80
 height, width, nbands = true_color_imgs.shape
@@ -90,7 +95,7 @@ figsize = width / float(dpi), height / float(dpi)
 fig = plt.figure(figsize=figsize)
 ax = fig.add_axes([0, 0, 1, 1])
 ax.axis('off')
-ax.imshow(true_color_imgs/255*2, interpolation='nearest')
+ax.imshow(plot_image, interpolation='nearest')
 plt.savefig(out_dir + 'sentinel2.png', dpi=dpi)
 
 date = sorted([metadata["scenes"][i]["date"] for i in range(0, len(metadata["scenes"]))])[0]
