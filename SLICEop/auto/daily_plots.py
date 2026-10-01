@@ -241,16 +241,19 @@ for l in ["fr_CA", "en_CA"]:
 
 # add a red dot at the Longueuil water treatment plant to the
 # NASA worldview image
-img = plt.imread(path + "/downloads/MODIS/worldview.jpg")
-dpi = 80
-height, width, nbands = img.shape
-figsize = width / float(dpi), height / float(dpi)
-fig = plt.figure(figsize=figsize)
-ax = fig.add_axes([0, 0, 1, 1])
-ax.axis('off')
-ax.imshow(img, interpolation='nearest')
-plt.plot(650, 306, marker="o", markersize=16, color="firebrick")
-fig.savefig(path + "/echart/worldview.dot.png", dpi=dpi, transparent=True)
+try:
+    img = plt.imread(path + "/downloads/MODIS/worldview.jpg")
+    dpi = 80
+    height, width, nbands = img.shape
+    figsize = width / float(dpi), height / float(dpi)
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis('off')
+    ax.imshow(img, interpolation='nearest')
+    plt.plot(650, 306, marker="o", markersize=16, color="firebrick")
+    fig.savefig(path + "/echart/worldview.dot.png", dpi=dpi, transparent=True)
+except:
+    print("NASA worldview image not processed")
 # add a red dot at the Longueuil water treatment plant to the
 # SENTINEL image as well as the date
 img = plt.imread(path + "/downloads/sentinel/sentinel2.png")
