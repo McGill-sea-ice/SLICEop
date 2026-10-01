@@ -9,14 +9,15 @@ import datetime
 import requests
 
 now = datetime.datetime.now()
+yesterday = now - datetime.timedelta(days=1)
 # specify directory to store the downloaded image
 path = os.environ["SLICEOP_PATH"]
 out_dir = path + "/downloads/MODIS/"
 
 # extract year, month and day from datetime.datetime.now()
-year = f"{now.year:04d}"
-month = f"{now.month:02d}"
-day = f"{(now.day - 1):02d}"
+year = f"{yesterday.year:04d}"
+month = f"{yesterday.month:02d}"
+day = f"{(yesterday.day):02d}"
 
 print("Downloading MODIS satellite image for " + year + "-" + month + "-" + day)
 

@@ -9,18 +9,20 @@ import datetime
 import getpass
 import sentinelhub as sh
 from matplotlib import pyplot as plt
+import numpy as np
 
 config = sh.SHConfig("cdse")
 
 now = datetime.datetime.now()
+yesterday = now - datetime.timedelta(days=1)
 # specify directory to store the downloaded image
 path = os.environ["SLICEOP_PATH"]
 out_dir = path + "/downloads/sentinel/"
 
 # extract year, month and day from datetime.datetime.now()
-year = f"{now.year:04d}"
-month = f"{now.month:02d}"
-day = f"{(now.day - 1):02d}"
+year = f"{yesterday.year:04d}"
+month = f"{yesterday.month:02d}"
+day = f"{(yesterday.day):02d}"
 
 print("Downloading SENTINEL2 satellite image around " + year + "-" + month + "-" + day)
 
